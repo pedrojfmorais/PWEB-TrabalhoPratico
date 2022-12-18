@@ -1,0 +1,38 @@
+﻿@model IEnumerable<TrabalhoPratico.Models.Localizacao>
+
+@{
+    ViewData["Title"] = "Localizações";
+}
+
+<h1>Lista de localizações</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-success">Adicionar localização</a>
+</p>
+@if (@ViewBag.error != null)
+{
+    <p class="text-danger">@ViewBag.error</p>
+}
+<table class="table table-bordered table-striped table-hover text-center table-responsive-sm">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Nome)
+            </th>
+            <th>Operações</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nome)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Editar</a>
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Apagar</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

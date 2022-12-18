@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TrabalhoPratico.Data;
 using TrabalhoPratico.Models;
+using TrabalhoPratico.Models.ViewModels;
 
 namespace TrabalhoPratico.Controllers
 {
@@ -26,7 +27,9 @@ namespace TrabalhoPratico.Controllers
         }
 
         // GET: Veiculos
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(
+            [Bind("TextoAPesquisar,Ordem,CategoriaId")] PesquisaFrotaVeiculosViewModel pesquisaVeiculos,
+            string Disponivel)
         {
             if (TempData["error"] != null)
             {
@@ -34,8 +37,45 @@ namespace TrabalhoPratico.Controllers
                 TempData.Remove("error");
             }
 
-            var applicationDbContext = _context.Veiculo.Include(v => v.Categoria).Include(v => v.Empresa).Include(v => v.Localizacao);
-            return View(await applicationDbContext.ToListAsync());
+            IQueryable<Veiculo> task = _context.Veiculo.Include(v => v.Categoria).Include(v => v.Empresa).Include(v => v.Localizacao);
+            if (string.IsNullOrWhiteSpace(pesquisaVeiculos.TextoAPesquisar))
+            {
+                task = task.OrderByDescending(v => v.Marca).ThenByDescending(v => v.Modelo).ThenByDescending(v => v.Ano);
+            }
+            else
+            {
+                if (Disponivel != null && Disponivel.Equals("on"))
+                {
+                    pesquisaVeiculos.Disponivel = true;
+                }
+
+                task = task
+                    .Where(e => (
+                        e.Marca.Contains(pesquisaVeiculos.TextoAPesquisar)
+                        || e.Modelo.Contains(pesquisaVeiculos.TextoAPesquisar)
+                        || e.Ano.ToString().Contains(pesquisaVeiculos.TextoAPesquisar)
+                    ) 
+                    && e.Disponivel == pesquisaVeiculos.Disponivel
+                    && e.CategoriaId == pesquisaVeiculos.CategoriaId);
+            }
+
+            if (pesquisaVeiculos.Ordem != null)
+            {
+                if (pesquisaVeiculos.Ordem.Equals("desc"))
+                {
+                    task = task.OrderByDescending(v => v.Marca).ThenByDescending(v => v.Modelo).ThenByDescending(v => v.Ano);
+                }
+                else if (pesquisaVeiculos.Ordem.Equals("asc"))
+                {
+                    task = task.OrderBy(v => v.Marca).ThenBy(v => v.Modelo).ThenBy(v => v.Ano);
+                }
+            }
+
+            ViewBag.CategoriaId = new SelectList(_context.CategoriaVeiculo.ToList(), "Id", "Nome");
+
+            pesquisaVeiculos.ListaDeVeiculos = await task.ToListAsync();
+
+            return View(pesquisaVeiculos);
         }
 
         // GET: Veiculos/Details/5
