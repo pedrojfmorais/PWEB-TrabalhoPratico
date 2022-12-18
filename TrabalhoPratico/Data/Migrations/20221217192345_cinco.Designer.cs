@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrabalhoPratico.Data;
 
@@ -11,9 +12,10 @@ using TrabalhoPratico.Data;
 namespace TrabalhoPratico.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221217192345_cinco")]
+    partial class cinco
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -303,36 +305,6 @@ namespace TrabalhoPratico.Data.Migrations
                     b.ToTable("Localizacao");
                 });
 
-            modelBuilder.Entity("TrabalhoPratico.Models.Reserva", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("ClienteId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("DataEntrega")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DataLevantamento")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("VeiculoId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClienteId");
-
-                    b.HasIndex("VeiculoId");
-
-                    b.ToTable("Reserva");
-                });
-
             modelBuilder.Entity("TrabalhoPratico.Models.Veiculo", b =>
                 {
                     b.Property<int>("Id")
@@ -350,7 +322,7 @@ namespace TrabalhoPratico.Data.Migrations
                     b.Property<bool>("Disponivel")
                         .HasColumnType("bit");
 
-                    b.Property<int>("EmpresaId")
+                    b.Property<int?>("EmpresaId")
                         .HasColumnType("int");
 
                     b.Property<int>("LocalizacaoId")
@@ -368,8 +340,8 @@ namespace TrabalhoPratico.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("PrecoDia")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("PrecoDia")
+                        .HasColumnType("int");
 
                     b.Property<int>("Quilometros")
                         .HasColumnType("int");
@@ -445,25 +417,6 @@ namespace TrabalhoPratico.Data.Migrations
                     b.Navigation("Empresa");
                 });
 
-            modelBuilder.Entity("TrabalhoPratico.Models.Reserva", b =>
-                {
-                    b.HasOne("TrabalhoPratico.Models.ApplicationUser", "Cliente")
-                        .WithMany()
-                        .HasForeignKey("ClienteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TrabalhoPratico.Models.Veiculo", "Veiculo")
-                        .WithMany()
-                        .HasForeignKey("VeiculoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Cliente");
-
-                    b.Navigation("Veiculo");
-                });
-
             modelBuilder.Entity("TrabalhoPratico.Models.Veiculo", b =>
                 {
                     b.HasOne("TrabalhoPratico.Models.CategoriaVeiculo", "Categoria")
@@ -472,11 +425,9 @@ namespace TrabalhoPratico.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TrabalhoPratico.Models.Empresa", "Empresa")
+                    b.HasOne("TrabalhoPratico.Models.Empresa", null)
                         .WithMany("Veiculos")
-                        .HasForeignKey("EmpresaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("EmpresaId");
 
                     b.HasOne("TrabalhoPratico.Models.Localizacao", "Localizacao")
                         .WithMany("Veiculos")
@@ -485,8 +436,6 @@ namespace TrabalhoPratico.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Categoria");
-
-                    b.Navigation("Empresa");
 
                     b.Navigation("Localizacao");
                 });

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrabalhoPratico.Data;
 
@@ -11,9 +12,10 @@ using TrabalhoPratico.Data;
 namespace TrabalhoPratico.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221217172341_tres")]
+    partial class tres
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -171,7 +173,7 @@ namespace TrabalhoPratico.Data.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("ContaAtiva")
+                    b.Property<bool?>("ContaAtiva")
                         .HasColumnType("bit");
 
                     b.Property<DateTime>("DataNascimento")
@@ -271,13 +273,13 @@ namespace TrabalhoPratico.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("Classificacao")
-                        .HasColumnType("int");
+                    b.Property<double>("classificacao")
+                        .HasColumnType("float");
 
-                    b.Property<bool>("EstadoSubscricao")
+                    b.Property<bool>("estadoSubscricao")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Nome")
+                    b.Property<string>("nome")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -303,36 +305,6 @@ namespace TrabalhoPratico.Data.Migrations
                     b.ToTable("Localizacao");
                 });
 
-            modelBuilder.Entity("TrabalhoPratico.Models.Reserva", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("ClienteId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("DataEntrega")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DataLevantamento")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("VeiculoId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClienteId");
-
-                    b.HasIndex("VeiculoId");
-
-                    b.ToTable("Reserva");
-                });
-
             modelBuilder.Entity("TrabalhoPratico.Models.Veiculo", b =>
                 {
                     b.Property<int>("Id")
@@ -350,9 +322,6 @@ namespace TrabalhoPratico.Data.Migrations
                     b.Property<bool>("Disponivel")
                         .HasColumnType("bit");
 
-                    b.Property<int>("EmpresaId")
-                        .HasColumnType("int");
-
                     b.Property<int>("LocalizacaoId")
                         .HasColumnType("int");
 
@@ -368,8 +337,8 @@ namespace TrabalhoPratico.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("PrecoDia")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("PrecoDia")
+                        .HasColumnType("int");
 
                     b.Property<int>("Quilometros")
                         .HasColumnType("int");
@@ -377,8 +346,6 @@ namespace TrabalhoPratico.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CategoriaId");
-
-                    b.HasIndex("EmpresaId");
 
                     b.HasIndex("LocalizacaoId");
 
@@ -439,29 +406,10 @@ namespace TrabalhoPratico.Data.Migrations
             modelBuilder.Entity("TrabalhoPratico.Models.ApplicationUser", b =>
                 {
                     b.HasOne("TrabalhoPratico.Models.Empresa", "Empresa")
-                        .WithMany("Trabalhadores")
+                        .WithMany()
                         .HasForeignKey("EmpresaId");
 
                     b.Navigation("Empresa");
-                });
-
-            modelBuilder.Entity("TrabalhoPratico.Models.Reserva", b =>
-                {
-                    b.HasOne("TrabalhoPratico.Models.ApplicationUser", "Cliente")
-                        .WithMany()
-                        .HasForeignKey("ClienteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TrabalhoPratico.Models.Veiculo", "Veiculo")
-                        .WithMany()
-                        .HasForeignKey("VeiculoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Cliente");
-
-                    b.Navigation("Veiculo");
                 });
 
             modelBuilder.Entity("TrabalhoPratico.Models.Veiculo", b =>
@@ -469,12 +417,6 @@ namespace TrabalhoPratico.Data.Migrations
                     b.HasOne("TrabalhoPratico.Models.CategoriaVeiculo", "Categoria")
                         .WithMany("Veiculos")
                         .HasForeignKey("CategoriaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TrabalhoPratico.Models.Empresa", "Empresa")
-                        .WithMany("Veiculos")
-                        .HasForeignKey("EmpresaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -486,20 +428,11 @@ namespace TrabalhoPratico.Data.Migrations
 
                     b.Navigation("Categoria");
 
-                    b.Navigation("Empresa");
-
                     b.Navigation("Localizacao");
                 });
 
             modelBuilder.Entity("TrabalhoPratico.Models.CategoriaVeiculo", b =>
                 {
-                    b.Navigation("Veiculos");
-                });
-
-            modelBuilder.Entity("TrabalhoPratico.Models.Empresa", b =>
-                {
-                    b.Navigation("Trabalhadores");
-
                     b.Navigation("Veiculos");
                 });
 

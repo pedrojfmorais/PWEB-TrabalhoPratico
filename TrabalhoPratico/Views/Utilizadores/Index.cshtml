@@ -1,0 +1,55 @@
+﻿@model IEnumerable<TrabalhoPratico.Models.ViewModels.UtilizadorViewModel>
+
+@{
+    ViewData["Title"] = "Utilizadores";
+}
+
+<h1>Utilizadores</h1>
+
+<table class="table table-bordered table-striped table-hover text-center table-responsive-sm">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.PrimeiroNome)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UltimoNome)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UserName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Roles)
+            </th>
+            <th>Operações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PrimeiroNome)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UltimoNome)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserName)
+                </td>
+                <td>
+                    @String.Join(',',  item.Roles)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Editar</a>
+                    @if (item.Ativo)
+                    {
+                        <a asp-action="Desativar" asp-route-id="@item.Id" class="btn btn-danger">Desativar Conta</a>
+                    } else
+                    {
+                        <a asp-action="Ativar" asp-route-id="@item.Id" class="btn btn-success">Ativar Conta</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
