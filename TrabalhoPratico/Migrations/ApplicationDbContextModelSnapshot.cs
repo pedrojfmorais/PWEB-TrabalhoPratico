@@ -349,16 +349,12 @@ namespace TrabalhoPratico.Migrations
             modelBuilder.Entity("TrabalhoPratico.Models.ReservaEstadoVeiculoEntrega", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<bool>("DanosVeiculo")
                         .HasColumnType("bit");
 
                     b.Property<string>("FuncionarioId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Observacoes")
@@ -383,16 +379,12 @@ namespace TrabalhoPratico.Migrations
             modelBuilder.Entity("TrabalhoPratico.Models.ReservaEstadoVeiculoLevantamento", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<bool>("DanosVeiculo")
                         .HasColumnType("bit");
 
                     b.Property<string>("FuncionarioId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Observacoes")
@@ -561,9 +553,7 @@ namespace TrabalhoPratico.Migrations
                 {
                     b.HasOne("TrabalhoPratico.Models.ApplicationUser", "Funcionario")
                         .WithMany()
-                        .HasForeignKey("FuncionarioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("FuncionarioId");
 
                     b.HasOne("TrabalhoPratico.Models.Reserva", "Reserva")
                         .WithMany()
@@ -577,10 +567,8 @@ namespace TrabalhoPratico.Migrations
             modelBuilder.Entity("TrabalhoPratico.Models.ReservaEstadoVeiculoLevantamento", b =>
                 {
                     b.HasOne("TrabalhoPratico.Models.ApplicationUser", "Funcionario")
-                        .WithMany()
-                        .HasForeignKey("FuncionarioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("VeiculosEntreguesAClientes")
+                        .HasForeignKey("FuncionarioId");
 
                     b.HasOne("TrabalhoPratico.Models.Reserva", "Reserva")
                         .WithMany()
@@ -616,6 +604,11 @@ namespace TrabalhoPratico.Migrations
                     b.Navigation("Empresa");
 
                     b.Navigation("Localizacao");
+                });
+
+            modelBuilder.Entity("TrabalhoPratico.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("VeiculosEntreguesAClientes");
                 });
 
             modelBuilder.Entity("TrabalhoPratico.Models.CategoriaVeiculo", b =>

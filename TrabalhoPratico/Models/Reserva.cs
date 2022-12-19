@@ -25,7 +25,7 @@ namespace TrabalhoPratico.Models
 
         public string ClienteId { get; set; }
         public ApplicationUser Cliente { get; set; }
-
+        
         [ForeignKey(nameof(ReservaEstadoVeiculoLevantamento))]
         public int? ReservaEstadoVeiculoLevantamentoId { get; set; }
         public ReservaEstadoVeiculoLevantamento? ReservaEstadoVeiculoLevantamento { get; set; }

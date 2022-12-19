@@ -32,7 +32,12 @@ namespace TrabalhoPratico.Controllers
         // GET: Reservas
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Reserva.Include(r => r.Cliente).Include(r => r.Veiculo).Include(r => r.Veiculo.Categoria);
+            var applicationDbContext = _context.Reserva
+                .Include(r => r.Cliente)
+                .Include(r => r.Veiculo)
+                .Include(r => r.Veiculo.Categoria)
+                .Include(r => r.ReservaEstadoVeiculoLevantamento)
+                .Include(r => r.ReservaEstadoVeiculoEntrega);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -95,7 +100,6 @@ namespace TrabalhoPratico.Controllers
             reservaEstadoVeiculoLevantamento.ReservaId = id;
             reservaEstadoVeiculoLevantamento.Reserva = await _context.Reserva.Where(r => r.Id == id).Include(r => r.Veiculo).Include(r => r.Cliente).FirstAsync();
             
-            ModelState.Remove("FuncionarioId");
             ModelState.Remove("Funcionario");
             ModelState.Remove("Reserva");
 
@@ -110,7 +114,7 @@ namespace TrabalhoPratico.Controllers
 
             return View(reservaEstadoVeiculoLevantamento);
         }
-
+        
         // GET: Reservas/Details/5
         public async Task<IActionResult> Details(int? id)
         {

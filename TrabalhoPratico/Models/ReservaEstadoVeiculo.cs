@@ -7,6 +7,7 @@ namespace TrabalhoPratico.Models
 {
     public abstract class ReservaEstadoVeiculo
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
         [Display(Name = "Quilometros", Prompt = "Introduza os quilometros atuais do veiculo",
@@ -22,8 +23,8 @@ namespace TrabalhoPratico.Models
         [DataType(DataType.MultilineText)]
         public string Observacoes { get; set; }
 
-        public string FuncionarioId { get; set; }
-        public ApplicationUser Funcionario { get; set; }
+        public string? FuncionarioId { get; set; }
+        public ApplicationUser? Funcionario { get; set; }
 
         [ForeignKey(nameof(Reserva))]
         public int? ReservaId { get; set; }

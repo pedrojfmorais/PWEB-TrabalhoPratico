@@ -281,12 +281,11 @@ namespace TrabalhoPratico.Migrations
                 name: "ReservaEstadoVeiculoEntrega",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     Quilometros = table.Column<int>(type: "int", nullable: false),
                     DanosVeiculo = table.Column<bool>(type: "bit", nullable: false),
                     Observacoes = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FuncionarioId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FuncionarioId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     ReservaId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -296,8 +295,7 @@ namespace TrabalhoPratico.Migrations
                         name: "FK_ReservaEstadoVeiculoEntrega_AspNetUsers_FuncionarioId",
                         column: x => x.FuncionarioId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_ReservaEstadoVeiculoEntrega_Reserva_ReservaId",
                         column: x => x.ReservaId,
@@ -309,12 +307,11 @@ namespace TrabalhoPratico.Migrations
                 name: "ReservaEstadoVeiculoLevantamento",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     Quilometros = table.Column<int>(type: "int", nullable: false),
                     DanosVeiculo = table.Column<bool>(type: "bit", nullable: false),
                     Observacoes = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FuncionarioId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FuncionarioId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     ReservaId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -324,8 +321,7 @@ namespace TrabalhoPratico.Migrations
                         name: "FK_ReservaEstadoVeiculoLevantamento_AspNetUsers_FuncionarioId",
                         column: x => x.FuncionarioId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_ReservaEstadoVeiculoLevantamento_Reserva_ReservaId",
                         column: x => x.ReservaId,
