@@ -8,9 +8,11 @@ namespace TrabalhoPratico.Data
     {
         public DbSet<CategoriaVeiculo> CategoriaVeiculo { get; set; }
         public DbSet<Empresa> Empresa { get; set; }
-        public DbSet<Veiculo> Veiculo { get; set; }
         public DbSet<Localizacao> Localizacao { get; set; }
         public DbSet<Reserva> Reserva { get; set; }
+        public DbSet<ReservaEstadoVeiculoLevantamento> ReservaEstadoVeiculoLevantamento { get; set; }
+        public DbSet<ReservaEstadoVeiculoEntrega> ReservaEstadoVeiculoEntrega { get; set; }
+        public DbSet<Veiculo> Veiculo { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)

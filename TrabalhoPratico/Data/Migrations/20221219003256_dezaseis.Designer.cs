@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrabalhoPratico.Data;
 
@@ -11,9 +12,10 @@ using TrabalhoPratico.Data;
 namespace TrabalhoPratico.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221219003256_dezaseis")]
+    partial class dezaseis
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -337,10 +339,6 @@ namespace TrabalhoPratico.Data.Migrations
 
                     b.HasIndex("ClienteId");
 
-                    b.HasIndex("ReservaEstadoVeiculoEntregaId");
-
-                    b.HasIndex("ReservaEstadoVeiculoLevantamentoId");
-
                     b.HasIndex("VeiculoId");
 
                     b.ToTable("Reserva");
@@ -375,7 +373,9 @@ namespace TrabalhoPratico.Data.Migrations
 
                     b.HasIndex("FuncionarioId");
 
-                    b.HasIndex("ReservaId");
+                    b.HasIndex("ReservaId")
+                        .IsUnique()
+                        .HasFilter("[ReservaId] IS NOT NULL");
 
                     b.ToTable("ReservaEstadoVeiculoEntrega");
                 });
@@ -409,7 +409,9 @@ namespace TrabalhoPratico.Data.Migrations
 
                     b.HasIndex("FuncionarioId");
 
-                    b.HasIndex("ReservaId");
+                    b.HasIndex("ReservaId")
+                        .IsUnique()
+                        .HasFilter("[ReservaId] IS NOT NULL");
 
                     b.ToTable("ReservaEstadoVeiculoLevantamento");
                 });
@@ -534,14 +536,6 @@ namespace TrabalhoPratico.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TrabalhoPratico.Models.ReservaEstadoVeiculoEntrega", "ReservaEstadoVeiculoEntrega")
-                        .WithMany()
-                        .HasForeignKey("ReservaEstadoVeiculoEntregaId");
-
-                    b.HasOne("TrabalhoPratico.Models.ReservaEstadoVeiculoLevantamento", "ReservaEstadoVeiculoLevantamento")
-                        .WithMany()
-                        .HasForeignKey("ReservaEstadoVeiculoLevantamentoId");
-
                     b.HasOne("TrabalhoPratico.Models.Veiculo", "Veiculo")
                         .WithMany()
                         .HasForeignKey("VeiculoId")
@@ -549,10 +543,6 @@ namespace TrabalhoPratico.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Cliente");
-
-                    b.Navigation("ReservaEstadoVeiculoEntrega");
-
-                    b.Navigation("ReservaEstadoVeiculoLevantamento");
 
                     b.Navigation("Veiculo");
                 });
@@ -566,8 +556,8 @@ namespace TrabalhoPratico.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("TrabalhoPratico.Models.Reserva", "Reserva")
-                        .WithMany()
-                        .HasForeignKey("ReservaId");
+                        .WithOne("ReservaEstadoVeiculoEntrega")
+                        .HasForeignKey("TrabalhoPratico.Models.ReservaEstadoVeiculoEntrega", "ReservaId");
 
                     b.Navigation("Funcionario");
 
@@ -583,8 +573,8 @@ namespace TrabalhoPratico.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("TrabalhoPratico.Models.Reserva", "Reserva")
-                        .WithMany()
-                        .HasForeignKey("ReservaId");
+                        .WithOne("ReservaEstadoVeiculoLevantamento")
+                        .HasForeignKey("TrabalhoPratico.Models.ReservaEstadoVeiculoLevantamento", "ReservaId");
 
                     b.Navigation("Funcionario");
 
@@ -633,6 +623,13 @@ namespace TrabalhoPratico.Data.Migrations
             modelBuilder.Entity("TrabalhoPratico.Models.Localizacao", b =>
                 {
                     b.Navigation("Veiculos");
+                });
+
+            modelBuilder.Entity("TrabalhoPratico.Models.Reserva", b =>
+                {
+                    b.Navigation("ReservaEstadoVeiculoEntrega");
+
+                    b.Navigation("ReservaEstadoVeiculoLevantamento");
                 });
 #pragma warning restore 612, 618
         }

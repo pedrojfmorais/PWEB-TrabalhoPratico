@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrabalhoPratico.Data;
 
@@ -11,9 +12,10 @@ using TrabalhoPratico.Data;
 namespace TrabalhoPratico.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221219002617_quinze")]
+    partial class quinze
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -368,14 +370,9 @@ namespace TrabalhoPratico.Data.Migrations
                     b.Property<int>("Quilometros")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ReservaId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("FuncionarioId");
-
-                    b.HasIndex("ReservaId");
 
                     b.ToTable("ReservaEstadoVeiculoEntrega");
                 });
@@ -402,14 +399,9 @@ namespace TrabalhoPratico.Data.Migrations
                     b.Property<int>("Quilometros")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ReservaId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("FuncionarioId");
-
-                    b.HasIndex("ReservaId");
 
                     b.ToTable("ReservaEstadoVeiculoLevantamento");
                 });
@@ -565,13 +557,7 @@ namespace TrabalhoPratico.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TrabalhoPratico.Models.Reserva", "Reserva")
-                        .WithMany()
-                        .HasForeignKey("ReservaId");
-
                     b.Navigation("Funcionario");
-
-                    b.Navigation("Reserva");
                 });
 
             modelBuilder.Entity("TrabalhoPratico.Models.ReservaEstadoVeiculoLevantamento", b =>
@@ -582,13 +568,7 @@ namespace TrabalhoPratico.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TrabalhoPratico.Models.Reserva", "Reserva")
-                        .WithMany()
-                        .HasForeignKey("ReservaId");
-
                     b.Navigation("Funcionario");
-
-                    b.Navigation("Reserva");
                 });
 
             modelBuilder.Entity("TrabalhoPratico.Models.Veiculo", b =>

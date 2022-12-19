@@ -1,0 +1,45 @@
+﻿@model TrabalhoPratico.Models.ReservaEstadoVeiculo
+
+@{
+    ViewData["Title"] = "Entregar Veiculo";
+}
+
+<h1>Entregar Veiculo</h1>
+
+<h4>Entregar veiculo ao cliente @Model.Reserva.Cliente.UserName</h4>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Levantamento">
+            <input type="hidden" name="FuncionarioId" value="@ViewBag.FuncionarioId" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Quilometros" class="control-label"></label>
+                <input asp-for="Quilometros" class="form-control" />
+                <span asp-validation-for="Quilometros" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="DanosVeiculo" /> @Html.DisplayNameFor(model => model.DanosVeiculo)
+                </label>
+             </div>
+            <div class="form-group">
+                <label asp-for="Observacoes" class="control-label"></label>
+                <textarea asp-for="Observacoes" class="form-control"></textarea>
+                <span asp-validation-for="Observacoes" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Entregar Veiculo" class="btn btn-primary" />
+                <a asp-action="Index"class="btn btn-secondary">Voltar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrabalhoPratico.Data;
 
@@ -11,9 +12,10 @@ using TrabalhoPratico.Data;
 namespace TrabalhoPratico.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221219010749_dezoito")]
+    partial class dezoito
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -324,12 +326,6 @@ namespace TrabalhoPratico.Data.Migrations
                     b.Property<DateTime>("DataLevantamento")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ReservaEstadoVeiculoEntregaId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ReservaEstadoVeiculoLevantamentoId")
-                        .HasColumnType("int");
-
                     b.Property<int>("VeiculoId")
                         .HasColumnType("int");
 
@@ -337,81 +333,9 @@ namespace TrabalhoPratico.Data.Migrations
 
                     b.HasIndex("ClienteId");
 
-                    b.HasIndex("ReservaEstadoVeiculoEntregaId");
-
-                    b.HasIndex("ReservaEstadoVeiculoLevantamentoId");
-
                     b.HasIndex("VeiculoId");
 
                     b.ToTable("Reserva");
-                });
-
-            modelBuilder.Entity("TrabalhoPratico.Models.ReservaEstadoVeiculoEntrega", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<bool>("DanosVeiculo")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("FuncionarioId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Observacoes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Quilometros")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ReservaId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FuncionarioId");
-
-                    b.HasIndex("ReservaId");
-
-                    b.ToTable("ReservaEstadoVeiculoEntrega");
-                });
-
-            modelBuilder.Entity("TrabalhoPratico.Models.ReservaEstadoVeiculoLevantamento", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<bool>("DanosVeiculo")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("FuncionarioId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Observacoes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Quilometros")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ReservaId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FuncionarioId");
-
-                    b.HasIndex("ReservaId");
-
-                    b.ToTable("ReservaEstadoVeiculoLevantamento");
                 });
 
             modelBuilder.Entity("TrabalhoPratico.Models.Veiculo", b =>
@@ -534,14 +458,6 @@ namespace TrabalhoPratico.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TrabalhoPratico.Models.ReservaEstadoVeiculoEntrega", "ReservaEstadoVeiculoEntrega")
-                        .WithMany()
-                        .HasForeignKey("ReservaEstadoVeiculoEntregaId");
-
-                    b.HasOne("TrabalhoPratico.Models.ReservaEstadoVeiculoLevantamento", "ReservaEstadoVeiculoLevantamento")
-                        .WithMany()
-                        .HasForeignKey("ReservaEstadoVeiculoLevantamentoId");
-
                     b.HasOne("TrabalhoPratico.Models.Veiculo", "Veiculo")
                         .WithMany()
                         .HasForeignKey("VeiculoId")
@@ -550,45 +466,7 @@ namespace TrabalhoPratico.Data.Migrations
 
                     b.Navigation("Cliente");
 
-                    b.Navigation("ReservaEstadoVeiculoEntrega");
-
-                    b.Navigation("ReservaEstadoVeiculoLevantamento");
-
                     b.Navigation("Veiculo");
-                });
-
-            modelBuilder.Entity("TrabalhoPratico.Models.ReservaEstadoVeiculoEntrega", b =>
-                {
-                    b.HasOne("TrabalhoPratico.Models.ApplicationUser", "Funcionario")
-                        .WithMany()
-                        .HasForeignKey("FuncionarioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TrabalhoPratico.Models.Reserva", "Reserva")
-                        .WithMany()
-                        .HasForeignKey("ReservaId");
-
-                    b.Navigation("Funcionario");
-
-                    b.Navigation("Reserva");
-                });
-
-            modelBuilder.Entity("TrabalhoPratico.Models.ReservaEstadoVeiculoLevantamento", b =>
-                {
-                    b.HasOne("TrabalhoPratico.Models.ApplicationUser", "Funcionario")
-                        .WithMany()
-                        .HasForeignKey("FuncionarioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TrabalhoPratico.Models.Reserva", "Reserva")
-                        .WithMany()
-                        .HasForeignKey("ReservaId");
-
-                    b.Navigation("Funcionario");
-
-                    b.Navigation("Reserva");
                 });
 
             modelBuilder.Entity("TrabalhoPratico.Models.Veiculo", b =>
