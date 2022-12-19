@@ -27,6 +27,7 @@ namespace TrabalhoPratico.Data
                 Email = "admin@localhost.com",
                 PrimeiroNome = "Administrador",
                 UltimoNome = "Local",
+                ContaAtiva=true,
                 EmailConfirmed = true,
                 PhoneNumberConfirmed = true
             };

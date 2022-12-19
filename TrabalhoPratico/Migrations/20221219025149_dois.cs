@@ -2,9 +2,9 @@
 
 #nullable disable
 
-namespace TrabalhoPratico.Data.Migrations
+namespace TrabalhoPratico.Migrations
 {
-    public partial class quatorze : Migration
+    public partial class dois : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

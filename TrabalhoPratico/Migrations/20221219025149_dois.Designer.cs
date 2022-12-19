@@ -9,11 +9,11 @@ using TrabalhoPratico.Data;
 
 #nullable disable
 
-namespace TrabalhoPratico.Data.Migrations
+namespace TrabalhoPratico.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221218163632_doze")]
-    partial class doze
+    [Migration("20221219025149_dois")]
+    partial class dois
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -317,17 +317,20 @@ namespace TrabalhoPratico.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<bool>("Confirmada")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("DataEntrega")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DataLevantamento")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("ReservaEstadoVeiculoEntregaId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("ReservaEstadoVeiculoEntregaId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("ReservaEstadoVeiculoLevantamentoId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("ReservaEstadoVeiculoLevantamentoId")
+                        .HasColumnType("int");
 
                     b.Property<int>("VeiculoId")
                         .HasColumnType("int");
@@ -335,6 +338,10 @@ namespace TrabalhoPratico.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ClienteId");
+
+                    b.HasIndex("ReservaEstadoVeiculoEntregaId");
+
+                    b.HasIndex("ReservaEstadoVeiculoLevantamentoId");
 
                     b.HasIndex("VeiculoId");
 
@@ -370,9 +377,7 @@ namespace TrabalhoPratico.Data.Migrations
 
                     b.HasIndex("FuncionarioId");
 
-                    b.HasIndex("ReservaId")
-                        .IsUnique()
-                        .HasFilter("[ReservaId] IS NOT NULL");
+                    b.HasIndex("ReservaId");
 
                     b.ToTable("ReservaEstadoVeiculoEntrega");
                 });
@@ -406,9 +411,7 @@ namespace TrabalhoPratico.Data.Migrations
 
                     b.HasIndex("FuncionarioId");
 
-                    b.HasIndex("ReservaId")
-                        .IsUnique()
-                        .HasFilter("[ReservaId] IS NOT NULL");
+                    b.HasIndex("ReservaId");
 
                     b.ToTable("ReservaEstadoVeiculoLevantamento");
                 });
@@ -533,6 +536,14 @@ namespace TrabalhoPratico.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("TrabalhoPratico.Models.ReservaEstadoVeiculoEntrega", "ReservaEstadoVeiculoEntrega")
+                        .WithMany()
+                        .HasForeignKey("ReservaEstadoVeiculoEntregaId");
+
+                    b.HasOne("TrabalhoPratico.Models.ReservaEstadoVeiculoLevantamento", "ReservaEstadoVeiculoLevantamento")
+                        .WithMany()
+                        .HasForeignKey("ReservaEstadoVeiculoLevantamentoId");
+
                     b.HasOne("TrabalhoPratico.Models.Veiculo", "Veiculo")
                         .WithMany()
                         .HasForeignKey("VeiculoId")
@@ -540,6 +551,10 @@ namespace TrabalhoPratico.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Cliente");
+
+                    b.Navigation("ReservaEstadoVeiculoEntrega");
+
+                    b.Navigation("ReservaEstadoVeiculoLevantamento");
 
                     b.Navigation("Veiculo");
                 });
@@ -553,8 +568,8 @@ namespace TrabalhoPratico.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("TrabalhoPratico.Models.Reserva", "Reserva")
-                        .WithOne("ReservaEstadoVeiculoEntrega")
-                        .HasForeignKey("TrabalhoPratico.Models.ReservaEstadoVeiculoEntrega", "ReservaId");
+                        .WithMany()
+                        .HasForeignKey("ReservaId");
 
                     b.Navigation("Funcionario");
 
@@ -570,8 +585,8 @@ namespace TrabalhoPratico.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("TrabalhoPratico.Models.Reserva", "Reserva")
-                        .WithOne("ReservaEstadoVeiculoLevantamento")
-                        .HasForeignKey("TrabalhoPratico.Models.ReservaEstadoVeiculoLevantamento", "ReservaId");
+                        .WithMany()
+                        .HasForeignKey("ReservaId");
 
                     b.Navigation("Funcionario");
 
@@ -620,13 +635,6 @@ namespace TrabalhoPratico.Data.Migrations
             modelBuilder.Entity("TrabalhoPratico.Models.Localizacao", b =>
                 {
                     b.Navigation("Veiculos");
-                });
-
-            modelBuilder.Entity("TrabalhoPratico.Models.Reserva", b =>
-                {
-                    b.Navigation("ReservaEstadoVeiculoEntrega");
-
-                    b.Navigation("ReservaEstadoVeiculoLevantamento");
                 });
 #pragma warning restore 612, 618
         }
