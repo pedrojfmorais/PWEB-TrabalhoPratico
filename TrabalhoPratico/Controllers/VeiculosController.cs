@@ -14,7 +14,6 @@ using TrabalhoPratico.Models.ViewModels;
 
 namespace TrabalhoPratico.Controllers
 {
-    [Authorize(Roles = "Funcionario,Gestor")]
     public class VeiculosController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -27,6 +26,7 @@ namespace TrabalhoPratico.Controllers
         }
 
         // GET: Veiculos
+        [Authorize(Roles = "Funcionario,Gestor")]
         public async Task<IActionResult> Index(
             [Bind("TextoAPesquisar,Ordem,CategoriaId")] PesquisaFrotaVeiculosViewModel pesquisaVeiculos,
             string Disponivel)
@@ -82,6 +82,7 @@ namespace TrabalhoPratico.Controllers
         }
 
         // GET: Veiculos/Details/5
+        [Authorize(Roles = "Funcionario,Gestor")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Veiculo == null)
@@ -103,6 +104,7 @@ namespace TrabalhoPratico.Controllers
         }
 
         // GET: Ativar
+        [Authorize(Roles = "Funcionario,Gestor")]
         public async Task<IActionResult> Ativar(int? id)
         {
             if (id == null || _context.Veiculo == null)
@@ -125,6 +127,7 @@ namespace TrabalhoPratico.Controllers
         }
 
         // GET: Desativar
+        [Authorize(Roles = "Funcionario,Gestor")]
         public async Task<IActionResult> Desativar(int? id)
         {
             if (id == null || _context.Veiculo == null)
@@ -147,6 +150,7 @@ namespace TrabalhoPratico.Controllers
         }
 
         // GET: Veiculos/Create
+        [Authorize(Roles = "Funcionario,Gestor")]
         public IActionResult Create()
         {
             ViewData["CategoriaId"] = new SelectList(_context.CategoriaVeiculo, "Id", "Nome");
@@ -159,6 +163,7 @@ namespace TrabalhoPratico.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Funcionario,Gestor")]
         public async Task<IActionResult> Create([Bind("Id,Marca,Modelo,Ano,Matricula,Quilometros,Disponivel,PrecoDia,CategoriaId,LocalizacaoId")] Veiculo veiculo)
         {
             veiculo.EmpresaId = (int)(await _userManager.GetUserAsync(User)).EmpresaId;
@@ -178,6 +183,7 @@ namespace TrabalhoPratico.Controllers
         }
 
         // GET: Veiculos/Edit/5
+        [Authorize(Roles = "Funcionario,Gestor")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Veiculo == null)
@@ -200,6 +206,7 @@ namespace TrabalhoPratico.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Funcionario,Gestor")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Marca,Modelo,Ano,Matricula,Quilometros,Disponivel,PrecoDia,CategoriaId,LocalizacaoId")] Veiculo veiculo)
         {
             if (id != veiculo.Id)
@@ -220,7 +227,7 @@ namespace TrabalhoPratico.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!VeiculoExists(veiculo.Id))
+                    if (!_context.Veiculo.Any(e => e.Id == id))
                     {
                         return NotFound();
                     }
@@ -237,6 +244,7 @@ namespace TrabalhoPratico.Controllers
         }
 
         // GET: Veiculos/Delete/5
+        [Authorize(Roles = "Funcionario,Gestor")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Veiculo == null)
@@ -266,6 +274,7 @@ namespace TrabalhoPratico.Controllers
         // POST: Veiculos/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Funcionario,Gestor")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Veiculo == null)
@@ -280,11 +289,6 @@ namespace TrabalhoPratico.Controllers
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool VeiculoExists(int id)
-        {
-          return _context.Veiculo.Any(e => e.Id == id);
         }
     }
 }

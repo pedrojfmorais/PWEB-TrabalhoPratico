@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -30,6 +32,7 @@ namespace TrabalhoPratico.Controllers
          */
 
         // GET: Reservas
+        [Authorize(Roles = "Funcionario,Gestor")]
         public async Task<IActionResult> Index()
         {
 
@@ -48,6 +51,7 @@ namespace TrabalhoPratico.Controllers
         }
 
         // GET: Confirmar
+        [Authorize(Roles = "Funcionario,Gestor")]
         public async Task<IActionResult> Confirmar(int? id)
         {
             if (id == null || _context.Reserva == null)
@@ -68,8 +72,9 @@ namespace TrabalhoPratico.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-        
+
         // GET: ReservaEstadoVeiculoes/Levantamento
+        [Authorize(Roles = "Funcionario,Gestor")]
         public async Task<IActionResult> LevantamentoAsync(int idReserva)
         {
             if (idReserva == null || _context.Reserva == null)
@@ -98,6 +103,7 @@ namespace TrabalhoPratico.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Funcionario,Gestor")]
         public async Task<IActionResult> Levantamento(
             [Bind("Id,Quilometros,DanosVeiculo,Observacoes,ReservaId,FuncionarioId")] ReservaEstadoVeiculoLevantamento reservaEstadoVeiculoLevantamento
             )
@@ -120,6 +126,7 @@ namespace TrabalhoPratico.Controllers
         }
 
         // GET: ReservaEstadoVeiculoes/Entrega
+        [Authorize(Roles = "Funcionario,Gestor")]
         public async Task<IActionResult> Entrega(int idReserva)
         {
             if (idReserva == null || _context.Reserva == null)
@@ -148,6 +155,7 @@ namespace TrabalhoPratico.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Funcionario,Gestor")]
         public async Task<IActionResult> Entrega(
             [Bind("Id,Quilometros,DanosVeiculo,Observacoes,ReservaId,FuncionarioId")] ReservaEstadoVeiculoEntrega reservaEntrega,
             [FromForm] List<IFormFile> provas
@@ -215,6 +223,8 @@ namespace TrabalhoPratico.Controllers
             return View(reservaEntrega);
         }
 
+
+        // Cliente
         // GET: Reservas/Details/5
         public async Task<IActionResult> Details(int? id)
         {

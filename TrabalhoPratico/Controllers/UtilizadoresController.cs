@@ -15,7 +15,6 @@ using TrabalhoPratico.Models.ViewModels;
 
 namespace TrabalhoPratico.Controllers
 {
-    [Authorize(Roles = "Administrador")]
     public class UtilizadoresController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -25,9 +24,10 @@ namespace TrabalhoPratico.Controllers
         {
             _context = context;
             _userManager = userManager;
-        }
+    }
 
         // GET: Utilizadores
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Index([Bind("TextoAPesquisar,Ordem")] PesquisaUtilizadorViewModel pesquisaUtilizador)
         {
 
@@ -88,6 +88,7 @@ namespace TrabalhoPratico.Controllers
         }
 
         // GET: Ativar
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Ativar(string? id)
         {
             if (id == null || _context.Users == null)
@@ -109,6 +110,7 @@ namespace TrabalhoPratico.Controllers
         }
 
         // GET: Desativar
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Desativar(string? id)
         {
             if (id == null || _context.Users == null)
@@ -130,6 +132,7 @@ namespace TrabalhoPratico.Controllers
         }
 
         // GET: Utilizadores/Edit/5
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Edit(string? id)
         {
             if (id == null || _context.Users == null)
@@ -150,6 +153,7 @@ namespace TrabalhoPratico.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Edit(string id, [Bind("Id,PrimeiroNome,UltimoNome,NIF,DataNascimento")] ApplicationUser user)
         {
 
