@@ -28,7 +28,7 @@
         <label asp-for="DataEntrega" class="control-label"></label>
         <input asp-for="DataEntrega" /> 
         <label for="CategoriaId">Categoria:</label>
-        <select name="CategoriaId" asp-items="ViewBag.CategoriaId"></select>
+        <select name="CategoriaId" asp-for="@Model.CategoriaId" asp-items="ViewBag.CategoriaId"></select>
     </div>
     <div class="text-start">
        
@@ -40,6 +40,10 @@
         
     </div>
 </form>
+@if (@ViewBag.error != null)
+{
+    <p class="text-danger">@ViewBag.error</p>
+}
 <p></p>
 <table class="table table-bordered table-striped table-hover text-center table-responsive-sm">
     <thead>

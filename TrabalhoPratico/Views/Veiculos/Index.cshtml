@@ -20,7 +20,7 @@
     <label for="Disponivel">Veiculo Disponivel:</label>
     <input type="checkbox" id="Disponivel" name="Disponivel" checked="@Model.Disponivel">
     <label for="CategoriaId">Categoria:</label>
-    <select name="CategoriaId" asp-items="ViewBag.CategoriaId"></select>
+    <select name="CategoriaId" asp-for="@Model.CategoriaId" asp-items="ViewBag.CategoriaId"></select>
     <label for="ordem">Ordenação:</label>
     <select name="Ordem" asp-for="Ordem" onchange="this.form.submit()">
         <option value="desc">Veiculo Descendente</option>

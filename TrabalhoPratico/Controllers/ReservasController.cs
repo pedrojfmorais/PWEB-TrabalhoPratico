@@ -83,6 +83,11 @@ namespace TrabalhoPratico.Controllers
 
             pesquisaReservas.ListaDeReservas = await task.ToListAsync();
 
+            if (pesquisaReservas.DataEntrega < pesquisaReservas.DataLevantamento)
+            {
+                ViewBag.error = "Datas de levantamento e entrega incorretas";
+            }
+
             return View(pesquisaReservas);
         }
 

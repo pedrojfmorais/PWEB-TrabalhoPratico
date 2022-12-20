@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis.Options;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using TrabalhoPratico.Data;
 using TrabalhoPratico.Models;
 using TrabalhoPratico.Models.ViewModels;
@@ -293,7 +295,7 @@ namespace TrabalhoPratico.Controllers
         }
     
         public async Task<IActionResult> Search(
-            [Bind("TextoAPesquisar,Ordem,CategoriaId,EmpresaId")] PesquisaVeiculosViewModel pesquisaVeiculos)
+            [Bind("TextoAPesquisar,Ordem,CategoriaId,EmpresaId,DataLevantamento,DataEntrega")] PesquisaVeiculosViewModel pesquisaVeiculos)
         {
             if (TempData["error"] != null)
             {
@@ -303,9 +305,9 @@ namespace TrabalhoPratico.Controllers
 
             IQueryable<Veiculo> task = _context.Veiculo.Include(v => v.Categoria)
                 .Include(v => v.Empresa).Include(v => v.Localizacao);
-            if (string.IsNullOrWhiteSpace(pesquisaVeiculos.TextoAPesquisar))
+            if (string.IsNullOrEmpty(pesquisaVeiculos.TextoAPesquisar))
             {
-                task = task.OrderByDescending(v => v.PrecoDia);
+                task = task.OrderBy(v => v.PrecoDia);
             }
             else
             {
@@ -313,6 +315,7 @@ namespace TrabalhoPratico.Controllers
                     .Where(e => (
                         e.Marca.Contains(pesquisaVeiculos.TextoAPesquisar)
                         || e.Modelo.Contains(pesquisaVeiculos.TextoAPesquisar)
+                        || e.Localizacao.Nome.Contains(pesquisaVeiculos.TextoAPesquisar)
                     )
                     && e.EmpresaId == pesquisaVeiculos.EmpresaId
                     && e.CategoriaId == pesquisaVeiculos.CategoriaId);
@@ -320,13 +323,17 @@ namespace TrabalhoPratico.Controllers
 
             if (pesquisaVeiculos.Ordem != null)
             {
-                if (pesquisaVeiculos.Ordem.Equals("desc"))
+                if (pesquisaVeiculos.Ordem.Equals("precoDesc"))
                 {
-                    task = task.OrderByDescending(v => v.Marca).ThenByDescending(v => v.Modelo).ThenByDescending(v => v.Ano);
+                    task = task.OrderByDescending(v => v.PrecoDia);
                 }
-                else if (pesquisaVeiculos.Ordem.Equals("asc"))
+                else if (pesquisaVeiculos.Ordem.Equals("precoAsc"))
                 {
-                    task = task.OrderBy(v => v.Marca).ThenBy(v => v.Modelo).ThenBy(v => v.Ano);
+                    task = task.OrderBy(v => v.PrecoDia);
+                }
+                else if (pesquisaVeiculos.Ordem.Equals("classDesc"))
+                {
+                    task = task.OrderByDescending(v => v.Empresa.Classificacao);
                 }
             }
 
@@ -334,6 +341,30 @@ namespace TrabalhoPratico.Controllers
             ViewBag.EmpresaId = new SelectList(_context.Empresa.ToList(), "Id", "Nome");
 
             pesquisaVeiculos.ListaDeVeiculos = await task.ToListAsync();
+
+            if (!string.IsNullOrEmpty(pesquisaVeiculos.TextoAPesquisar))
+            {
+
+                foreach(var veiculo in pesquisaVeiculos.ListaDeVeiculos.ToList())
+                {
+                    var res = await _context.Reserva.Include(r => r.Veiculo).Where(r => r.Veiculo.Id == veiculo.Id
+                    && ((DateTime.Compare(r.DataLevantamento, pesquisaVeiculos.DataLevantamento) > 0
+                    && DateTime.Compare(r.DataLevantamento, pesquisaVeiculos.DataEntrega) < 0)
+                    || (DateTime.Compare(r.DataEntrega, pesquisaVeiculos.DataLevantamento) > 0
+                    && DateTime.Compare(r.DataEntrega, pesquisaVeiculos.DataEntrega) < 0))
+                    ).FirstOrDefaultAsync();
+
+                    if(res != null)
+                    {
+                        pesquisaVeiculos.ListaDeVeiculos.Remove(veiculo);
+                    }
+                }
+
+                if(pesquisaVeiculos.DataEntrega < pesquisaVeiculos.DataLevantamento)
+                {
+                    ViewBag.error = "Datas de levantamento e entrega incorretas";
+                }
+            }
 
             return View(pesquisaVeiculos);
         }

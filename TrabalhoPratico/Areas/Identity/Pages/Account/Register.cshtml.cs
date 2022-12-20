@@ -80,6 +80,25 @@ namespace TrabalhoPratico.Areas.Identity.Pages.Account
             [Display(Name = "Email")]
             public string Email { get; set; }
 
+            [Display(Name = "Primeiro Nome", Prompt = "Introduza o primeiro nome",
+            Description = "Primeiro nome do utilizador")]
+            public string PrimeiroNome { get; set; }
+
+            [Display(Name = "Último Nome", Prompt = "Introduza o último nome",
+                Description = "Último nome do utilizador")]
+            public string UltimoNome { get; set; }
+
+            [Display(Name = "Data de Nascimento", Prompt = "Introduza a data se nascimento",
+                Description = "Data se nascimento do utilizador")]
+            [PersonalData, DataType(DataType.Date)]
+            public DateTime DataNascimento { get; set; }
+
+            [Display(Name = "NIF", Prompt = "Introduza o NIF",
+                Description = "Número de Indentificação Fiscal do utilizador")]
+            [PersonalData]
+            [RegularExpression("^\\d{9}$", ErrorMessage = "O NIF tem de ter 9 digitos!")]
+            public int NIF { get; set; }
+
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -117,11 +136,21 @@ namespace TrabalhoPratico.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+
+                user.PrimeiroNome = Input.PrimeiroNome;
+                user.UltimoNome = Input.UltimoNome;
+                user.NIF = Input.NIF;
+                user.DataNascimento = Input.DataNascimento;
+
+                user.ContaAtiva = true;
+
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
+
+                    await _userManager.AddToRoleAsync(user, "Cliente");
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
