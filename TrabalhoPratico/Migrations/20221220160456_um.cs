@@ -381,16 +381,6 @@ namespace TrabalhoPratico.Migrations
                 column: "ClienteId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reserva_ReservaEstadoVeiculoEntregaId",
-                table: "Reserva",
-                column: "ReservaEstadoVeiculoEntregaId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Reserva_ReservaEstadoVeiculoLevantamentoId",
-                table: "Reserva",
-                column: "ReservaEstadoVeiculoLevantamentoId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Reserva_VeiculoId",
                 table: "Reserva",
                 column: "VeiculoId");
@@ -403,7 +393,9 @@ namespace TrabalhoPratico.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_ReservaEstadoVeiculoEntrega_ReservaId",
                 table: "ReservaEstadoVeiculoEntrega",
-                column: "ReservaId");
+                column: "ReservaId",
+                unique: true,
+                filter: "[ReservaId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ReservaEstadoVeiculoLevantamento_FuncionarioId",
@@ -413,7 +405,9 @@ namespace TrabalhoPratico.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_ReservaEstadoVeiculoLevantamento_ReservaId",
                 table: "ReservaEstadoVeiculoLevantamento",
-                column: "ReservaId");
+                column: "ReservaId",
+                unique: true,
+                filter: "[ReservaId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Veiculo_CategoriaId",
@@ -429,48 +423,10 @@ namespace TrabalhoPratico.Migrations
                 name: "IX_Veiculo_LocalizacaoId",
                 table: "Veiculo",
                 column: "LocalizacaoId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Reserva_ReservaEstadoVeiculoEntrega_ReservaEstadoVeiculoEntregaId",
-                table: "Reserva",
-                column: "ReservaEstadoVeiculoEntregaId",
-                principalTable: "ReservaEstadoVeiculoEntrega",
-                principalColumn: "Id");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Reserva_ReservaEstadoVeiculoLevantamento_ReservaEstadoVeiculoLevantamentoId",
-                table: "Reserva",
-                column: "ReservaEstadoVeiculoLevantamentoId",
-                principalTable: "ReservaEstadoVeiculoLevantamento",
-                principalColumn: "Id");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Reserva_AspNetUsers_ClienteId",
-                table: "Reserva");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_ReservaEstadoVeiculoEntrega_AspNetUsers_FuncionarioId",
-                table: "ReservaEstadoVeiculoEntrega");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_ReservaEstadoVeiculoLevantamento_AspNetUsers_FuncionarioId",
-                table: "ReservaEstadoVeiculoLevantamento");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Veiculo_Empresa_EmpresaId",
-                table: "Veiculo");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Reserva_ReservaEstadoVeiculoEntrega_ReservaEstadoVeiculoEntregaId",
-                table: "Reserva");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Reserva_ReservaEstadoVeiculoLevantamento_ReservaEstadoVeiculoLevantamentoId",
-                table: "Reserva");
-
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -487,28 +443,28 @@ namespace TrabalhoPratico.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
-                name: "Empresa");
-
-            migrationBuilder.DropTable(
                 name: "ReservaEstadoVeiculoEntrega");
 
             migrationBuilder.DropTable(
                 name: "ReservaEstadoVeiculoLevantamento");
 
             migrationBuilder.DropTable(
+                name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
                 name: "Reserva");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Veiculo");
 
             migrationBuilder.DropTable(
                 name: "CategoriaVeiculo");
+
+            migrationBuilder.DropTable(
+                name: "Empresa");
 
             migrationBuilder.DropTable(
                 name: "Localizacao");

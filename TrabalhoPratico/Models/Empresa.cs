@@ -17,7 +17,7 @@ namespace TrabalhoPratico.Models
 
         [Display(Name = "Classificação", Prompt = "Introduza a classificação",
             Description = "Classificação da nova empresa a inserir")]
-        [RegularExpression("[0-9]|10", ErrorMessage = "O valor inserido tem de ser entre 0 e 10!")]
+        [RegularExpression("^(10|[0-9])$", ErrorMessage = "O valor inserido tem de ser entre 0 e 10!")]
         public int Classificacao { get; set; }
 
         public ICollection<Veiculo> Veiculos { get; set; }

@@ -12,7 +12,7 @@ using TrabalhoPratico.Data;
 namespace TrabalhoPratico.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221219225159_um")]
+    [Migration("20221220160456_um")]
     partial class um
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -339,10 +339,6 @@ namespace TrabalhoPratico.Migrations
 
                     b.HasIndex("ClienteId");
 
-                    b.HasIndex("ReservaEstadoVeiculoEntregaId");
-
-                    b.HasIndex("ReservaEstadoVeiculoLevantamentoId");
-
                     b.HasIndex("VeiculoId");
 
                     b.ToTable("Reserva");
@@ -376,7 +372,9 @@ namespace TrabalhoPratico.Migrations
 
                     b.HasIndex("FuncionarioId");
 
-                    b.HasIndex("ReservaId");
+                    b.HasIndex("ReservaId")
+                        .IsUnique()
+                        .HasFilter("[ReservaId] IS NOT NULL");
 
                     b.ToTable("ReservaEstadoVeiculoEntrega");
                 });
@@ -409,7 +407,9 @@ namespace TrabalhoPratico.Migrations
 
                     b.HasIndex("FuncionarioId");
 
-                    b.HasIndex("ReservaId");
+                    b.HasIndex("ReservaId")
+                        .IsUnique()
+                        .HasFilter("[ReservaId] IS NOT NULL");
 
                     b.ToTable("ReservaEstadoVeiculoLevantamento");
                 });
@@ -534,14 +534,6 @@ namespace TrabalhoPratico.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TrabalhoPratico.Models.ReservaEstadoVeiculoEntrega", "ReservaEstadoVeiculoEntrega")
-                        .WithMany()
-                        .HasForeignKey("ReservaEstadoVeiculoEntregaId");
-
-                    b.HasOne("TrabalhoPratico.Models.ReservaEstadoVeiculoLevantamento", "ReservaEstadoVeiculoLevantamento")
-                        .WithMany()
-                        .HasForeignKey("ReservaEstadoVeiculoLevantamentoId");
-
                     b.HasOne("TrabalhoPratico.Models.Veiculo", "Veiculo")
                         .WithMany()
                         .HasForeignKey("VeiculoId")
@@ -549,10 +541,6 @@ namespace TrabalhoPratico.Migrations
                         .IsRequired();
 
                     b.Navigation("Cliente");
-
-                    b.Navigation("ReservaEstadoVeiculoEntrega");
-
-                    b.Navigation("ReservaEstadoVeiculoLevantamento");
 
                     b.Navigation("Veiculo");
                 });
@@ -564,8 +552,8 @@ namespace TrabalhoPratico.Migrations
                         .HasForeignKey("FuncionarioId");
 
                     b.HasOne("TrabalhoPratico.Models.Reserva", "Reserva")
-                        .WithMany()
-                        .HasForeignKey("ReservaId");
+                        .WithOne("ReservaEstadoVeiculoEntrega")
+                        .HasForeignKey("TrabalhoPratico.Models.ReservaEstadoVeiculoEntrega", "ReservaId");
 
                     b.Navigation("Funcionario");
 
@@ -579,8 +567,8 @@ namespace TrabalhoPratico.Migrations
                         .HasForeignKey("FuncionarioId");
 
                     b.HasOne("TrabalhoPratico.Models.Reserva", "Reserva")
-                        .WithMany()
-                        .HasForeignKey("ReservaId");
+                        .WithOne("ReservaEstadoVeiculoLevantamento")
+                        .HasForeignKey("TrabalhoPratico.Models.ReservaEstadoVeiculoLevantamento", "ReservaId");
 
                     b.Navigation("Funcionario");
 
@@ -634,6 +622,13 @@ namespace TrabalhoPratico.Migrations
             modelBuilder.Entity("TrabalhoPratico.Models.Localizacao", b =>
                 {
                     b.Navigation("Veiculos");
+                });
+
+            modelBuilder.Entity("TrabalhoPratico.Models.Reserva", b =>
+                {
+                    b.Navigation("ReservaEstadoVeiculoEntrega");
+
+                    b.Navigation("ReservaEstadoVeiculoLevantamento");
                 });
 #pragma warning restore 612, 618
         }

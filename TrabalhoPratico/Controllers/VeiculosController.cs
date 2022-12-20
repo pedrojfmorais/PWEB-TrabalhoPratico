@@ -291,5 +291,51 @@ namespace TrabalhoPratico.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+    
+        public async Task<IActionResult> Search(
+            [Bind("TextoAPesquisar,Ordem,CategoriaId,EmpresaId")] PesquisaVeiculosViewModel pesquisaVeiculos)
+        {
+            if (TempData["error"] != null)
+            {
+                ViewBag.error = TempData["error"].ToString();
+                TempData.Remove("error");
+            }
+
+            IQueryable<Veiculo> task = _context.Veiculo.Include(v => v.Categoria)
+                .Include(v => v.Empresa).Include(v => v.Localizacao);
+            if (string.IsNullOrWhiteSpace(pesquisaVeiculos.TextoAPesquisar))
+            {
+                task = task.OrderByDescending(v => v.PrecoDia);
+            }
+            else
+            {
+                task = task
+                    .Where(e => (
+                        e.Marca.Contains(pesquisaVeiculos.TextoAPesquisar)
+                        || e.Modelo.Contains(pesquisaVeiculos.TextoAPesquisar)
+                    )
+                    && e.EmpresaId == pesquisaVeiculos.EmpresaId
+                    && e.CategoriaId == pesquisaVeiculos.CategoriaId);
+            }
+
+            if (pesquisaVeiculos.Ordem != null)
+            {
+                if (pesquisaVeiculos.Ordem.Equals("desc"))
+                {
+                    task = task.OrderByDescending(v => v.Marca).ThenByDescending(v => v.Modelo).ThenByDescending(v => v.Ano);
+                }
+                else if (pesquisaVeiculos.Ordem.Equals("asc"))
+                {
+                    task = task.OrderBy(v => v.Marca).ThenBy(v => v.Modelo).ThenBy(v => v.Ano);
+                }
+            }
+
+            ViewBag.CategoriaId = new SelectList(_context.CategoriaVeiculo.ToList(), "Id", "Nome");
+            ViewBag.EmpresaId = new SelectList(_context.Empresa.ToList(), "Id", "Nome");
+
+            pesquisaVeiculos.ListaDeVeiculos = await task.ToListAsync();
+
+            return View(pesquisaVeiculos);
+        }
     }
 }

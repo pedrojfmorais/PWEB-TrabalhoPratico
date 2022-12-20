@@ -1,0 +1,84 @@
+﻿@model TrabalhoPratico.Models.ViewModels.PesquisaVeiculosViewModel
+
+@{
+    ViewData["Title"] = "Veiculos";
+}
+
+<h1>Veiculos Disponiveis</h1>
+
+<form method="post">
+
+    <label asp-for="TextoAPesquisar" class="control-label"></label>
+    <input asp-for="TextoAPesquisar"/>
+    <button id="botaoPesquisa" type="submit" class="btn btn-default">
+        <svg bootstrap-icon="Search" class="text-warning" width="24" height="24" aria-label="Search"></svg>
+    </button>
+    <label for="EmpresaId">Empresa:</label>
+    <select name="EmpresaId" asp-items="ViewBag.EmpresaId"></select>
+    <label for="CategoriaId">Categoria:</label>
+    <select name="CategoriaId" asp-items="ViewBag.CategoriaId"></select>
+    <label for="ordem">Ordenação:</label>
+    <select name="Ordem" asp-for="Ordem" onchange="this.form.submit()">
+        <option value="desc">Veiculo Descendente</option>
+        <option value="asc">Veiculo Ascendente</option>
+    </select>
+</form>
+
+<div class="container bg-white">
+    <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
+        <h1 class="display-4 fw-normal">Cursos & Preços</h1>
+        <p class="fs-5 text-muted">
+            Na nossa escola podes aprender a conduzir desde uma scooter
+            até um avião, consoante a tua vontade e disponibilidade financeira. Temos planos para todas as
+            bolsas. Podes comprar um curso completo ou podes comprar packs de aulas até estares pronto para
+            o exame.
+        </p>
+    </div>
+    <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
+        @foreach (var item in Model.ListaDeVeiculos)
+        {
+            <div class="col">
+                <div class="card mb-4 rounded-3 shadow-sm">
+                    <div class="card-header py-3">
+                        <img src="..." class="card-img-top" alt="...">
+                        <h2 class="my-0 fw-normal">
+                            @if (string.IsNullOrWhiteSpace(Model.TextoAPesquisar))
+                            {
+                                @Html.DisplayFor(modelItem => item.Marca)
+                                <span> </span>
+                                @Html.DisplayFor(modelItem => item.Modelo)
+                            }
+                            else
+                            {
+                                @Html.Raw(item.Marca.ToString().ToLower().Replace(Model.TextoAPesquisar.ToLower(),
+                                    "<span class=\"bg-warning\">"+Model.TextoAPesquisar+"</span>"))
+                                <span> </span>
+                                @Html.Raw(item.Modelo.ToString().ToLower().Replace(Model.TextoAPesquisar.ToLower(),
+                                    "<span class=\"bg-warning\">"+Model.TextoAPesquisar+"</span>"))
+                            }
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mt-3 mb-4">
+                            <h5>Categoria: @Html.DisplayFor(modelItem => item.Categoria.Nome)</h5>
+                            <h5>Localização: @Html.DisplayFor(modelItem => item.Localizacao.Nome)</h5>
+                            <h5>
+                                Empresa:
+                                @Html.DisplayFor(modelItem => item.Empresa.Nome)
+                                (@Html.DisplayFor(modelItem => item.Empresa.Classificacao)/10
+                                <svg bootstrap-icon="Star" class="text-warning align-bottom" width="24" height="24" 
+                                aria-label="Classificação"></svg>)
+
+                            </h5>
+                        </ul>
+                        <hr>
+                        <h1 class="card-title pricing-card-title">
+                            @Html.DisplayFor(modelItem => item.PrecoDia)€
+                            <small class="text-muted fw-light"></small>
+                        </h1>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
