@@ -59,19 +59,23 @@
             <td>
                 @if (string.IsNullOrWhiteSpace(Model.TextoAPesquisar))
                 {
-                        @Html.DisplayFor(modelItem => item.Marca)
-                        <span> </span>
-                        @Html.DisplayFor(modelItem => item.Modelo)
+                    @Html.DisplayFor(modelItem => item.Marca)
+                    <span> </span>
+                    @Html.DisplayFor(modelItem => item.Modelo)
+                    <span>(@Html.DisplayFor(modelItem => item.Matricula))</span>
                 }
                 else
                 {
                     @Html.Raw(item.Marca.ToString().ToLower().Replace(Model.TextoAPesquisar.ToLower(),
-                "<span class=\"bg-warning\">"+Model.TextoAPesquisar+"</span>"))
-                <span> </span>
-                        @Html.Raw(item.Modelo.ToString().ToLower().Replace(Model.TextoAPesquisar.ToLower(),
-                "<span class=\"bg-warning\">"+Model.TextoAPesquisar+"</span>"))
+                        "<span class=\"bg-warning\">"+Model.TextoAPesquisar+"</span>"))
+                    <span> </span>
+                    @Html.Raw(item.Modelo.ToString().ToLower().Replace(Model.TextoAPesquisar.ToLower(),
+                        "<span class=\"bg-warning\">"+Model.TextoAPesquisar+"</span>"))
+                    <span>
+                        (@Html.Raw(item.Matricula.ToString().ToLower().Replace(Model.TextoAPesquisar.ToLower(),
+                        "<span class=\"bg-warning\">"+Model.TextoAPesquisar+"</span>")))
+                    </span>
                 }
-                (@Html.DisplayFor(modelItem => item.Matricula))
             </td>
             <td>
                     @if (string.IsNullOrWhiteSpace(Model.TextoAPesquisar))

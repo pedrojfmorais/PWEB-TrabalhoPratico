@@ -56,6 +56,7 @@ namespace TrabalhoPratico.Controllers
                     .Where(e => (
                         e.Marca.Contains(pesquisaVeiculos.TextoAPesquisar)
                         || e.Modelo.Contains(pesquisaVeiculos.TextoAPesquisar)
+                        || e.Matricula.Contains(pesquisaVeiculos.TextoAPesquisar)
                         || e.Ano.ToString().Contains(pesquisaVeiculos.TextoAPesquisar)
                     ) 
                     && e.Disponivel == pesquisaVeiculos.Disponivel
