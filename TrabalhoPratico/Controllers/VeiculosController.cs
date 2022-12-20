@@ -37,7 +37,10 @@ namespace TrabalhoPratico.Controllers
                 TempData.Remove("error");
             }
 
-            IQueryable<Veiculo> task = _context.Veiculo.Include(v => v.Categoria).Include(v => v.Empresa).Include(v => v.Localizacao);
+            var user = await _userManager.GetUserAsync(User);
+
+            IQueryable<Veiculo> task = _context.Veiculo.Include(v => v.Categoria)
+                .Include(v => v.Empresa).Include(v => v.Localizacao).Where(v => v.EmpresaId == user.EmpresaId);
             if (string.IsNullOrWhiteSpace(pesquisaVeiculos.TextoAPesquisar))
             {
                 task = task.OrderByDescending(v => v.Marca).ThenByDescending(v => v.Modelo).ThenByDescending(v => v.Ano);

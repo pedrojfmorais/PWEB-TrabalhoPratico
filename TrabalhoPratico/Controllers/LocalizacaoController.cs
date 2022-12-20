@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TrabalhoPratico.Data;
 using TrabalhoPratico.Models;
+using TrabalhoPratico.Models.ViewModels;
 
 namespace TrabalhoPratico.Controllers
 {
@@ -23,7 +24,7 @@ namespace TrabalhoPratico.Controllers
         }
 
         // GET: Localizacao
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index([Bind("TextoAPesquisar,Ordem")] PesquisaLocalizacaoViewModel pesquisaLocalizacao)
         {
             if (TempData["error"] != null)
             {
@@ -31,7 +32,30 @@ namespace TrabalhoPratico.Controllers
                 TempData.Remove("error");
             }
 
-            return View(await _context.Localizacao.ToListAsync());
+            IQueryable<Localizacao> task;
+            if (string.IsNullOrWhiteSpace(pesquisaLocalizacao.TextoAPesquisar))
+            {
+                task = _context.Localizacao.Where(e => e.Nome.Contains("")).OrderByDescending(e => e.Nome);
+            }
+            else
+            {
+                task = _context.Localizacao.Where(e => e.Nome.Contains(pesquisaLocalizacao.TextoAPesquisar));
+            }
+            if (pesquisaLocalizacao.Ordem != null)
+            {
+                if (pesquisaLocalizacao.Ordem.Equals("nomeDesc"))
+                {
+                    task = task.OrderByDescending(e => e.Nome);
+                }
+                else if (pesquisaLocalizacao.Ordem.Equals("nomeAsc"))
+                {
+                    task = task.OrderBy(e => e.Nome);
+                }
+            }
+
+            pesquisaLocalizacao.ListaDeLocalizacoes = await task.ToListAsync();
+
+            return View(pesquisaLocalizacao);
         }
 
         // GET: Localizacao/Create

@@ -12,7 +12,7 @@
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Levantamento">
-            <input type="hidden" name="FuncionarioId" value="@ViewBag.FuncionarioId" />
+            <input type="hidden" name="ReservaId" value="@Model.ReservaId" />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Quilometros" class="control-label"></label>
@@ -31,7 +31,7 @@
             </div>
             <div class="form-group">
                 <input type="submit" value="Entregar Veiculo" class="btn btn-primary" />
-                <a asp-action="Index"class="btn btn-secondary">Voltar</a>
+                <a asp-action="Index" class="btn btn-secondary">Voltar</a>
             </div>
         </form>
     </div>

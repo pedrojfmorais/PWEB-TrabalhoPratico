@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
 using TrabalhoPratico.Data;
 using TrabalhoPratico.Models;
@@ -27,13 +28,46 @@ namespace TrabalhoPratico.Controllers
         }
 
         // GET: Utilizadores
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index([Bind("TextoAPesquisar,Ordem")] PesquisaUtilizadorViewModel pesquisaUtilizador)
         {
-            var users = await _userManager.Users.ToListAsync();
+
+            IQueryable<ApplicationUser> task;
+            if (string.IsNullOrWhiteSpace(pesquisaUtilizador.TextoAPesquisar))
+            {
+                task = _userManager.Users.Where(e => e.PrimeiroNome.Contains(""))
+                    .OrderByDescending(e => e.PrimeiroNome)
+                    .ThenByDescending(e => e.UltimoNome)
+                    .ThenByDescending(e => e.UserName);
+            }
+            else
+            {
+                task = _userManager.Users.Where(e => 
+                e.PrimeiroNome.Contains(pesquisaUtilizador.TextoAPesquisar)
+                || e.UltimoNome.Contains(pesquisaUtilizador.TextoAPesquisar)
+                || e.UserName.Contains(pesquisaUtilizador.TextoAPesquisar)
+                );
+            }
+            if (pesquisaUtilizador.Ordem != null)
+            {
+                if (pesquisaUtilizador.Ordem.Equals("nomeDesc"))
+                {
+                    task = task.OrderByDescending(e => e.PrimeiroNome)
+                        .ThenByDescending(e => e.UltimoNome)
+                        .ThenByDescending(e => e.UserName);
+                }
+                else if (pesquisaUtilizador.Ordem.Equals("nomeAsc"))
+                {
+                    task = task.OrderBy(e => e.PrimeiroNome)
+                        .ThenBy(e => e.UltimoNome)
+                        .ThenBy(e => e.UserName);
+                }
+            }
+
+            var listaUsers = await task.ToListAsync();
 
             List<UtilizadorViewModel> usersViewModel = new List<UtilizadorViewModel>();
 
-            foreach (var user in users)
+            foreach (var user in listaUsers)
             {
                 UtilizadorViewModel userRolesViewModel = new UtilizadorViewModel();
 
@@ -47,7 +81,10 @@ namespace TrabalhoPratico.Controllers
 
                 usersViewModel.Add(userRolesViewModel);
             }
-            return View(usersViewModel);
+
+            pesquisaUtilizador.ListaDeUtilizadores = usersViewModel;
+
+            return View(pesquisaUtilizador);
         }
 
         // GET: Ativar

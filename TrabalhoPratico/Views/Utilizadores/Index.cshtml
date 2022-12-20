@@ -1,40 +1,76 @@
-﻿@model IEnumerable<TrabalhoPratico.Models.ViewModels.UtilizadorViewModel>
+﻿@model TrabalhoPratico.Models.ViewModels.PesquisaUtilizadorViewModel
 
 @{
     ViewData["Title"] = "Utilizadores";
 }
 
 <h1>Utilizadores</h1>
+<form method="post">
 
+    <label asp-for="TextoAPesquisar" class="control-label"></label>
+    <input asp-for="TextoAPesquisar"/>
+    <button id="botaoPesquisa" type="submit" class="btn btn-default">
+        <svg bootstrap-icon="Search" class="text-warning" width="24" height="24" aria-label="Search"></svg>
+    </button>
+    <label for="ordem">Ordenação:</label>
+    <select name="Ordem" asp-for="Ordem" onchange="this.form.submit()">
+        <option value="nomeDesc">Nome Descendente</option>
+        <option value="nomeAsc">Nome Ascendente</option>
+    </select>
+</form>
 <table class="table table-bordered table-striped table-hover text-center table-responsive-sm">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.PrimeiroNome)
+                @Html.DisplayNameFor(model => model.ListaDeUtilizadores.FirstOrDefault().PrimeiroNome)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.UltimoNome)
+                @Html.DisplayNameFor(model => model.ListaDeUtilizadores.FirstOrDefault().UltimoNome)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.UserName)
+                @Html.DisplayNameFor(model => model.ListaDeUtilizadores.FirstOrDefault().UserName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Roles)
+                @Html.DisplayNameFor(model => model.ListaDeUtilizadores.FirstOrDefault().Roles)
             </th>
             <th>Operações</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model) {
+        @foreach (var item in Model.ListaDeUtilizadores) {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.PrimeiroNome)
+                    @if (string.IsNullOrWhiteSpace(Model.TextoAPesquisar))
+                    {
+                        @Html.DisplayFor(modelItem => item.PrimeiroNome)
+                    }
+                    else
+                    {
+                        @Html.Raw(item.PrimeiroNome.ToString().ToLower().Replace(Model.TextoAPesquisar.ToLower(),
+                            "<span class=\"bg-warning\">"+Model.TextoAPesquisar+"</span>"))
+                    }
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.UltimoNome)
+                    @if (string.IsNullOrWhiteSpace(Model.TextoAPesquisar))
+                    {
+                        @Html.DisplayFor(modelItem => item.UltimoNome)
+                    }
+                    else
+                    {
+                        @Html.Raw(item.UltimoNome.ToString().ToLower().Replace(Model.TextoAPesquisar.ToLower(),
+                            "<span class=\"bg-warning\">"+Model.TextoAPesquisar+"</span>"))
+                    }
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.UserName)
+                    @if (string.IsNullOrWhiteSpace(Model.TextoAPesquisar))
+                    {
+                        @Html.DisplayFor(modelItem => item.UserName)
+                    }
+                    else
+                    {
+                        @Html.Raw(item.UserName.ToString().ToLower().Replace(Model.TextoAPesquisar.ToLower(),
+                            "<span class=\"bg-warning\">"+Model.TextoAPesquisar+"</span>"))
+                    }
                 </td>
                 <td>
                     @String.Join(',',  item.Roles)

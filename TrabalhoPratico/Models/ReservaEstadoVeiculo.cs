@@ -7,7 +7,6 @@ namespace TrabalhoPratico.Models
 {
     public abstract class ReservaEstadoVeiculo
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
         [Display(Name = "Quilometros", Prompt = "Introduza os quilometros atuais do veiculo",

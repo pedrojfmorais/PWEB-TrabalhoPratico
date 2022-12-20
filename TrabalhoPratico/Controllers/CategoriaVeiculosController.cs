@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TrabalhoPratico.Data;
 using TrabalhoPratico.Models;
+using TrabalhoPratico.Models.ViewModels;
 
 namespace TrabalhoPratico.Controllers
 {
@@ -23,9 +24,38 @@ namespace TrabalhoPratico.Controllers
         }
 
         // GET: CategoriaVeiculos
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index([Bind("TextoAPesquisar,Ordem")] PesquisaCategoriaViewModel pesquisaCategoria)
         {
-              return View(await _context.CategoriaVeiculo.ToListAsync());
+            if (TempData["error"] != null)
+            {
+                ViewBag.error = TempData["error"].ToString();
+                TempData.Remove("error");
+            }
+
+            IQueryable<CategoriaVeiculo> task;
+            if (string.IsNullOrWhiteSpace(pesquisaCategoria.TextoAPesquisar))
+            {
+                task = _context.CategoriaVeiculo.Where(e => e.Nome.Contains("")).OrderByDescending(e => e.Nome);
+            }
+            else
+            {
+                task = _context.CategoriaVeiculo.Where(e => e.Nome.Contains(pesquisaCategoria.TextoAPesquisar));
+            }
+            if (pesquisaCategoria.Ordem != null)
+            {
+                if (pesquisaCategoria.Ordem.Equals("nomeDesc"))
+                {
+                    task = task.OrderByDescending(e => e.Nome);
+                }
+                else if (pesquisaCategoria.Ordem.Equals("nomeAsc"))
+                {
+                    task = task.OrderBy(e => e.Nome);
+                }
+            }
+
+            pesquisaCategoria.ListaDeCategorias = await task.ToListAsync();
+
+            return View(pesquisaCategoria);
         }
 
         // GET: CategoriaVeiculos/Create
@@ -117,6 +147,12 @@ namespace TrabalhoPratico.Controllers
             if (categoriaVeiculo == null)
             {
                 return NotFound();
+            }
+
+            if (_context.Veiculo.Where(v => v.CategoriaId== id).Any())
+            {
+                TempData["error"] = "A categoria " + categoriaVeiculo.Nome + " ainda tem veiculos para aluguer.";
+                return RedirectToAction(nameof(Index));
             }
 
             return View(categoriaVeiculo);

@@ -102,8 +102,8 @@ namespace TrabalhoPratico.Controllers
 
                 var defaultUser = new ApplicationUser
                 {
-                    UserName = "gestor@" + empresa.Nome.ToLower() + ".com",
-                    Email = "gestor@" + empresa.Nome.ToLower() + ".com",
+                    UserName = "gestor@" + String.Concat(empresa.Nome.ToLower().Where(c => !Char.IsWhiteSpace(c))) + ".com",
+                    Email = "gestor@" + String.Concat(empresa.Nome.ToLower().Where(c => !Char.IsWhiteSpace(c))) + ".com",
                     PrimeiroNome = "Gestor",
                     UltimoNome = empresa.Nome,
                     EmailConfirmed = true,
