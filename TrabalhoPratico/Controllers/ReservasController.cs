@@ -48,6 +48,15 @@ namespace TrabalhoPratico.Controllers
                 .Where(r => r.Veiculo.EmpresaId == user.EmpresaId);
 
 
+            if (pesquisaReservas.DataLevantamento == DateTime.Parse("01/01/0001 00:00:00"))
+            {
+                pesquisaReservas.DataLevantamento = DateTime.Now;
+            }
+            if (pesquisaReservas.DataEntrega == DateTime.Parse("01/01/0001 00:00:00"))
+            {
+                pesquisaReservas.DataEntrega = DateTime.Now;
+            }
+
             if (string.IsNullOrWhiteSpace(pesquisaReservas.TextoAPesquisar))
             {
                 task = task.OrderByDescending(r => r.Cliente.UserName).ThenByDescending(r => r.Veiculo.Matricula).ThenByDescending(r => r.Veiculo.Categoria.Nome);

@@ -65,6 +65,21 @@ namespace TrabalhoPratico.Controllers
 
             var listaUsers = await task.ToListAsync();
 
+            var rolesPesquisa = await _context.Roles.Where(r => r.Name.Contains(pesquisaUtilizador.TextoAPesquisar)).ToListAsync();
+
+            foreach(var role in rolesPesquisa)
+            {
+                var usersInRoles = await _userManager.GetUsersInRoleAsync(role.Name);
+            
+                foreach(var user in usersInRoles)
+                {
+                    if (!listaUsers.Contains(user))
+                    {
+                        listaUsers.Add(user);
+                    }
+                }
+            }
+
             List<UtilizadorViewModel> usersViewModel = new List<UtilizadorViewModel>();
 
             foreach (var user in listaUsers)
@@ -88,7 +103,7 @@ namespace TrabalhoPratico.Controllers
         }
 
         // GET: Ativar
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Administrador,Gestor")]
         public async Task<IActionResult> Ativar(string? id)
         {
             if (id == null || _context.Users == null)
@@ -106,11 +121,16 @@ namespace TrabalhoPratico.Controllers
             utilizador.ContaAtiva = true;
             await _userManager.UpdateAsync(utilizador);
 
-            return RedirectToAction(nameof(Index));
+            var admins = await _userManager.GetUsersInRoleAsync("Administrador");
+            if(admins.Contains(await _userManager.GetUserAsync(User)))
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            return RedirectToAction(nameof(Gestor));
         }
 
         // GET: Desativar
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Administrador,Gestor")]
         public async Task<IActionResult> Desativar(string? id)
         {
             if (id == null || _context.Users == null)
@@ -128,7 +148,12 @@ namespace TrabalhoPratico.Controllers
             utilizador.ContaAtiva = false;
             await _userManager.UpdateAsync(utilizador);
 
-            return RedirectToAction(nameof(Index));
+            var admins = await _userManager.GetUsersInRoleAsync("Administrador");
+            if (admins.Contains(await _userManager.GetUserAsync(User)))
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            return RedirectToAction(nameof(Gestor));
         }
 
         // GET: Utilizadores/Edit/5
@@ -190,6 +215,88 @@ namespace TrabalhoPratico.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(user);
+        }
+    
+        // GET: Utilizadores
+        [Authorize(Roles = "Gestor")]
+        public async Task<IActionResult> Gestor([Bind("TextoAPesquisar,Ordem")] PesquisaUtilizadorViewModel pesquisaUtilizador)
+        {
+
+            var userLogado = await _userManager.GetUserAsync(User);
+
+            IQueryable<ApplicationUser> task;
+            if (string.IsNullOrWhiteSpace(pesquisaUtilizador.TextoAPesquisar))
+            {
+                task = _userManager.Users.Where(e => e.PrimeiroNome.Contains("") && e.EmpresaId == userLogado.EmpresaId)
+                    .OrderByDescending(e => e.PrimeiroNome)
+                    .ThenByDescending(e => e.UltimoNome)
+                    .ThenByDescending(e => e.UserName);
+            }
+            else
+            {
+                task = _userManager.Users.Where(e =>
+                e.EmpresaId == userLogado.EmpresaId
+
+                && (e.PrimeiroNome.Contains(pesquisaUtilizador.TextoAPesquisar)
+                || e.UltimoNome.Contains(pesquisaUtilizador.TextoAPesquisar)
+                || e.UserName.Contains(pesquisaUtilizador.TextoAPesquisar))
+                );
+            }
+            if (pesquisaUtilizador.Ordem != null)
+            {
+                if (pesquisaUtilizador.Ordem.Equals("nomeDesc"))
+                {
+                    task = task.OrderByDescending(e => e.PrimeiroNome)
+                        .ThenByDescending(e => e.UltimoNome)
+                        .ThenByDescending(e => e.UserName);
+                }
+                else if (pesquisaUtilizador.Ordem.Equals("nomeAsc"))
+                {
+                    task = task.OrderBy(e => e.PrimeiroNome)
+                        .ThenBy(e => e.UltimoNome)
+                        .ThenBy(e => e.UserName);
+                }
+            }
+
+            var listaUsers = await task.ToListAsync();
+
+            var rolesPesquisa = await _context.Roles.Where(r => r.Name.Contains(pesquisaUtilizador.TextoAPesquisar)).ToListAsync();
+
+            foreach (var role in rolesPesquisa)
+            {
+                var usersInRoles = await _userManager.GetUsersInRoleAsync(role.Name);
+
+                foreach (var userInRole in usersInRoles)
+                {
+                    if (!listaUsers.Contains(userInRole) && userInRole.EmpresaId == userLogado.EmpresaId)
+                    {
+                        listaUsers.Add(userInRole);
+                    }
+                }
+            }
+
+            //listaUsers.Remove(userLogado);
+
+            List<UtilizadorViewModel> usersViewModel = new List<UtilizadorViewModel>();
+
+            foreach (var user in listaUsers)
+            {
+                UtilizadorViewModel userRolesViewModel = new UtilizadorViewModel();
+
+                userRolesViewModel.Id = user.Id;
+                userRolesViewModel.UserName = user.UserName;
+                userRolesViewModel.PrimeiroNome = user.PrimeiroNome;
+                userRolesViewModel.UltimoNome = user.UltimoNome;
+                userRolesViewModel.Ativo = user.ContaAtiva;
+
+                userRolesViewModel.Roles = await _userManager.GetRolesAsync(user);
+
+                usersViewModel.Add(userRolesViewModel);
+            }
+
+            pesquisaUtilizador.ListaDeUtilizadores = usersViewModel;
+
+            return View(pesquisaUtilizador);
         }
     }
 }
