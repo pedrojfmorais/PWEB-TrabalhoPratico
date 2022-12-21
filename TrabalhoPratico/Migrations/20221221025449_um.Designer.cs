@@ -12,7 +12,7 @@ using TrabalhoPratico.Data;
 namespace TrabalhoPratico.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221220160456_um")]
+    [Migration("20221221025449_um")]
     partial class um
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

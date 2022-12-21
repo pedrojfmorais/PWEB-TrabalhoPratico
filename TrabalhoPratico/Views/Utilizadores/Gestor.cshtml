@@ -5,6 +5,8 @@
 }
 
 <h1>Utilizadores</h1>
+
+<a asp-action="Create" class="btn btn-success">Adicionar Funcionário/Gestor</a>
 <form method="post">
 
     <label asp-for="TextoAPesquisar" class="control-label"></label>
@@ -91,7 +93,7 @@
                     {
                         <a asp-action="Ativar" asp-route-id="@item.Id" class="btn btn-outline-success">Ativar Conta</a>
                     }
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-danger">Apagar</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Apagar</a>
                 </td>
             </tr>
         }

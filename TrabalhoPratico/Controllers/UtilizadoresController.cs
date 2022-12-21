@@ -275,7 +275,7 @@ namespace TrabalhoPratico.Controllers
                 }
             }
 
-            //listaUsers.Remove(userLogado);
+            listaUsers.Remove(userLogado);
 
             List<UtilizadorViewModel> usersViewModel = new List<UtilizadorViewModel>();
 
@@ -297,6 +297,60 @@ namespace TrabalhoPratico.Controllers
             pesquisaUtilizador.ListaDeUtilizadores = usersViewModel;
 
             return View(pesquisaUtilizador);
+        }
+
+        // GET: Create
+        [Authorize(Roles = "Gestor")]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: Reservas/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Gestor")]
+        public async Task<IActionResult> Create([Bind("Email,PrimeiroNome,UltimoNome,DataNascimento,NIF,TipoUser,Password,ConfirmPassword")] AdicionarFuncionarioGestorViewModel utilizador)
+        {
+
+            if (ModelState.IsValid)
+            {
+
+                var userLogado = await _userManager.GetUserAsync(User);
+                
+                var newUser = new ApplicationUser
+                {
+                    UserName = utilizador.Email,
+                    Email = utilizador.Email,
+                    PrimeiroNome = utilizador.PrimeiroNome,
+                    UltimoNome = utilizador.UltimoNome,
+                    EmailConfirmed = true,
+                    PhoneNumberConfirmed = true,
+                    ContaAtiva = true
+                };
+
+                newUser.EmpresaId = (await _context.Users.Include(u => u.Empresa).Where(u => u.Id == userLogado.Id).FirstOrDefaultAsync()).Empresa.Id;
+
+                var user = await _userManager.FindByEmailAsync(newUser.Email);
+                if (user == null)
+                {
+                    await _userManager.CreateAsync(newUser, utilizador.Password);
+                    if (utilizador.TipoUser.Equals("func"))
+                    {
+                        await _userManager.AddToRoleAsync(newUser, Roles.Funcionario.ToString());
+                    }
+                    else if (utilizador.TipoUser.Equals("gestor"))
+                    {
+                        await _userManager.AddToRoleAsync(newUser, Roles.Gestor.ToString());
+                    }
+                }
+                
+                return RedirectToAction(nameof(Gestor));
+            }
+
+            return View(utilizador);
         }
     }
 }
