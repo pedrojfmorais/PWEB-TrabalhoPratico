@@ -242,27 +242,30 @@ namespace TrabalhoPratico.Controllers
 
                 await _context.SaveChangesAsync();
 
-                string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img/provasDanosVeiculos/");
-                if (!Directory.Exists(path))
-                    Directory.CreateDirectory(path);
-
-                // Dir relativo aos ficheiros do curso
-                path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img/provasDanosVeiculos/" + reservaEntrega.Id.ToString());
-                if (!Directory.Exists(path))
-                    Directory.CreateDirectory(path);
-
-                foreach (var formFile in provas)
+                if (reservaEntrega.DanosVeiculo)
                 {
-                    if (formFile.Length > 0)
+                    string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img/provasDanosVeiculos/");
+                    if (!Directory.Exists(path))
+                        Directory.CreateDirectory(path);
+
+                    // Dir relativo aos ficheiros do curso
+                    path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img/provasDanosVeiculos/" + reservaEntrega.Id.ToString());
+                    if (!Directory.Exists(path))
+                        Directory.CreateDirectory(path);
+
+                    foreach (var formFile in provas)
                     {
-                        var filePath = Path.Combine(path, Guid.NewGuid().ToString() + Path.GetExtension(formFile.FileName));
-                        while (System.IO.File.Exists(filePath))
+                        if (formFile.Length > 0)
                         {
-                            filePath = Path.Combine(path, Guid.NewGuid().ToString() + Path.GetExtension(formFile.FileName));
-                        }
-                        using (var stream = System.IO.File.Create(filePath))
-                        {
-                            await formFile.CopyToAsync(stream);
+                            var filePath = Path.Combine(path, Guid.NewGuid().ToString() + Path.GetExtension(formFile.FileName));
+                            while (System.IO.File.Exists(filePath))
+                            {
+                                filePath = Path.Combine(path, Guid.NewGuid().ToString() + Path.GetExtension(formFile.FileName));
+                            }
+                            using (var stream = System.IO.File.Create(filePath))
+                            {
+                                await formFile.CopyToAsync(stream);
+                            }
                         }
                     }
                 }

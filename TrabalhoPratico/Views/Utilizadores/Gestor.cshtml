@@ -20,6 +20,10 @@
         <option value="nomeAsc">Nome Ascendente</option>
     </select>
 </form>
+@if (@ViewBag.error != null)
+{
+    <p class="text-danger">@ViewBag.error</p>
+}
 <table class="table table-bordered table-striped table-hover text-center table-responsive-sm">
     <thead>
         <tr>

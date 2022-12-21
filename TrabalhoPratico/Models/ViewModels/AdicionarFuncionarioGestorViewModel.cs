@@ -33,7 +33,8 @@ namespace TrabalhoPratico.Models.ViewModels
         public string TipoUser { get; set; }
 
         [Display(Name = "Password")]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        [RegularExpression("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{6,}$", 
+            ErrorMessage = "O Password tem de ter 6 caracteres, uma letra maiuscula, uma letra minuscula, um número e um caracter especial!")]
         [Required(ErrorMessage = "Password é obrigatória")]
         [DataType(DataType.Password)]
         public string Password { get; set; }

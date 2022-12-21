@@ -221,6 +221,11 @@ namespace TrabalhoPratico.Controllers
         [Authorize(Roles = "Gestor")]
         public async Task<IActionResult> Gestor([Bind("TextoAPesquisar,Ordem")] PesquisaUtilizadorViewModel pesquisaUtilizador)
         {
+            if (TempData["error"] != null)
+            {
+                ViewBag.error = TempData["error"].ToString();
+                TempData.Remove("error");
+            }
 
             var userLogado = await _userManager.GetUserAsync(User);
 
@@ -328,7 +333,9 @@ namespace TrabalhoPratico.Controllers
                     UltimoNome = utilizador.UltimoNome,
                     EmailConfirmed = true,
                     PhoneNumberConfirmed = true,
-                    ContaAtiva = true
+                    ContaAtiva = true,
+                    NIF = utilizador.NIF,
+                    DataNascimento = utilizador.DataNascimento
                 };
 
                 newUser.EmpresaId = (await _context.Users.Include(u => u.Empresa).Where(u => u.Id == userLogado.Id).FirstOrDefaultAsync()).Empresa.Id;
@@ -352,5 +359,52 @@ namespace TrabalhoPratico.Controllers
 
             return View(utilizador);
         }
+        // GET: Utilizadores/Delete/5
+        [Authorize(Roles = "Gestor")]
+        public async Task<IActionResult> Delete(string? id)
+        {
+            if (id == null || _context.Users == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            if (_context.ReservaEstadoVeiculoLevantamento.Where(r => r.FuncionarioId == id).Any()
+            || _context.ReservaEstadoVeiculoEntrega.Where(r => r.FuncionarioId == id).Any())
+            {
+                TempData["error"] = "O funcionário '" + user.UserName + "' tem reservas associadas a si.";
+                return RedirectToAction(nameof(Gestor));
+            }
+
+            return View(user);
+        }
+
+        // POST: Utilizadores/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = "Gestor")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(string id)
+        {
+            if (_context.Empresa == null)
+            {
+                return Problem("Entity set 'ApplicationDbContext.AspNetUsers'  is null.");
+            }
+
+            var user = await _context.Users.FindAsync(id);
+            if (user != null)
+            {
+                _context.Users.Remove(user);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Gestor));
+        }
+
     }
 }
