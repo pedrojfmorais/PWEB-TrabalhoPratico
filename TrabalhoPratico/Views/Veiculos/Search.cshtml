@@ -3,9 +3,9 @@
 @{
     ViewData["Title"] = "Veiculos";
 }
-
-<h1>Veiculos Disponiveis</h1>
-
+<div class="pricing-header p-3 pb-md-4 mx-auto text-center">
+    <h1 class="display-4 fw-normal">Veiculos Disponiveis</h1>
+</div>
 <form method="post">
 
     <label asp-for="TextoAPesquisar" class="control-label"></label>
@@ -35,11 +35,9 @@
 {
     <p class="text-danger">@ViewBag.error</p>
 }
+<p></p>
 <div class="container bg-white">
-    <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
-        <h1 class="display-4 fw-normal">Veiculos Disponiveis</h1>
-    </div>
-    
+
     @if(!(string.IsNullOrEmpty(Model.TextoAPesquisar))){ 
         @if(Model.ListaDeVeiculos.Count == 0){
             <p class="alert alert-warning">

@@ -303,6 +303,15 @@ namespace TrabalhoPratico.Controllers
                 TempData.Remove("error");
             }
 
+            if(pesquisaVeiculos.DataLevantamento == DateTime.Parse("01/01/0001 00:00:00"))
+            {
+                pesquisaVeiculos.DataLevantamento = DateTime.Now;
+            }
+            if(pesquisaVeiculos.DataEntrega == DateTime.Parse("01/01/0001 00:00:00"))
+            {
+                pesquisaVeiculos.DataEntrega = DateTime.Now;
+            }
+
             IQueryable<Veiculo> task = _context.Veiculo.Include(v => v.Categoria)
                 .Include(v => v.Empresa).Include(v => v.Localizacao);
             if (string.IsNullOrEmpty(pesquisaVeiculos.TextoAPesquisar))
@@ -316,9 +325,17 @@ namespace TrabalhoPratico.Controllers
                         e.Marca.Contains(pesquisaVeiculos.TextoAPesquisar)
                         || e.Modelo.Contains(pesquisaVeiculos.TextoAPesquisar)
                         || e.Localizacao.Nome.Contains(pesquisaVeiculos.TextoAPesquisar)
-                    )
-                    && e.EmpresaId == pesquisaVeiculos.EmpresaId
-                    && e.CategoriaId == pesquisaVeiculos.CategoriaId);
+                    ));
+
+                if(pesquisaVeiculos.EmpresaId != 0)
+                {
+                    task = task.Where(e => e.EmpresaId == pesquisaVeiculos.EmpresaId);
+                }
+                
+                if(pesquisaVeiculos.CategoriaId != 0)
+                {
+                    task = task.Where(e => e.CategoriaId == pesquisaVeiculos.CategoriaId);
+                }
             }
 
             if (pesquisaVeiculos.Ordem != null)
