@@ -30,8 +30,7 @@ namespace TrabalhoPratico.Controllers
         // GET: Veiculos
         [Authorize(Roles = "Funcionario,Gestor")]
         public async Task<IActionResult> Index(
-            [Bind("TextoAPesquisar,Ordem,CategoriaId")] PesquisaFrotaVeiculosViewModel pesquisaVeiculos,
-            string Disponivel)
+            [Bind("TextoAPesquisar,Ordem,Disponivel,CategoriaId")] PesquisaFrotaVeiculosViewModel pesquisaVeiculos)
         {
             if (TempData["error"] != null)
             {
@@ -49,22 +48,26 @@ namespace TrabalhoPratico.Controllers
             }
             else
             {
-                if (Disponivel != null && Disponivel.Equals("on"))
-                {
-                    pesquisaVeiculos.Disponivel = true;
-                }
-
                 task = task
                     .Where(e => (
                         e.Marca.Contains(pesquisaVeiculos.TextoAPesquisar)
                         || e.Modelo.Contains(pesquisaVeiculos.TextoAPesquisar)
                         || e.Matricula.Contains(pesquisaVeiculos.TextoAPesquisar)
                         || e.Ano.ToString().Contains(pesquisaVeiculos.TextoAPesquisar)
-                    ) 
-                    && e.Disponivel == pesquisaVeiculos.Disponivel
-                    && e.CategoriaId == pesquisaVeiculos.CategoriaId);
+                    ) && e.CategoriaId == pesquisaVeiculos.CategoriaId);
             }
 
+            if (pesquisaVeiculos.Disponivel != null)
+            {
+                if (pesquisaVeiculos.Disponivel.Equals("disponivelSim"))
+                {
+                    task = task.Where(e => e.Disponivel);
+                }
+                else if (pesquisaVeiculos.Disponivel.Equals("disponivelNao"))
+                {
+                    task = task.Where(e => !e.Disponivel);
+                }
+            }
             if (pesquisaVeiculos.Ordem != null)
             {
                 if (pesquisaVeiculos.Ordem.Equals("desc"))
@@ -421,7 +424,7 @@ namespace TrabalhoPratico.Controllers
             }
 
             IQueryable<Veiculo> task = _context.Veiculo.Include(v => v.Categoria)
-                .Include(v => v.Empresa).Include(v => v.Localizacao).Where(v => v.Disponivel);
+                .Include(v => v.Empresa).Include(v => v.Localizacao).Where(v => v.Disponivel && v.Empresa.EstadoSubscricao);
             if (string.IsNullOrEmpty(pesquisaVeiculos.TextoAPesquisar))
             {
                 task = task.OrderBy(v => v.PrecoDia);

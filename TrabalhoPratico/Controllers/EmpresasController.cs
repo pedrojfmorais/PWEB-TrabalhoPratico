@@ -28,9 +28,7 @@ namespace TrabalhoPratico.Controllers
         
         // GET: Empresas
         public async Task<IActionResult> Index(
-            [Bind("TextoAPesquisar,Ordem")] PesquisaEmpresaViewModel pesquisaEmpresa, 
-            string SubscricaoAtiva
-            )
+            [Bind("TextoAPesquisar,SubscricaoAtiva,Ordem")] PesquisaEmpresaViewModel pesquisaEmpresa)
         {
             if (TempData["error"] != null)
             {
@@ -41,20 +39,26 @@ namespace TrabalhoPratico.Controllers
             IQueryable<Empresa> task;
             if (string.IsNullOrWhiteSpace(pesquisaEmpresa.TextoAPesquisar))
             {
-                task = _context.Empresa.Where(e => e.Nome.Contains("")).OrderByDescending(e => e.Nome);
+                task = _context.Empresa.Where(e => e.Nome.Contains(""));
             }
             else
             {
-
-                if(SubscricaoAtiva != null && SubscricaoAtiva.Equals("on"))
-                {
-                    pesquisaEmpresa.SubscricaoAtiva = true;
-                }
-
-                task = _context.Empresa
-                    .Where(e => e.Nome.Contains(pesquisaEmpresa.TextoAPesquisar) && e.EstadoSubscricao == pesquisaEmpresa.SubscricaoAtiva);
+                task = _context.Empresa.Where(e => e.Nome.Contains(pesquisaEmpresa.TextoAPesquisar));
             }
-            if(pesquisaEmpresa.Ordem != null)
+
+            if (pesquisaEmpresa.SubscricaoAtiva != null)
+            {
+                if (pesquisaEmpresa.SubscricaoAtiva.Equals("subscricaoTrue"))
+                {
+                    task = task.Where(e => e.EstadoSubscricao);
+                }
+                else if (pesquisaEmpresa.SubscricaoAtiva.Equals("subscricaoFalse"))
+                {
+                    task = task.Where(e => !e.EstadoSubscricao);
+                }
+            }
+                
+            if (pesquisaEmpresa.Ordem != null)
             {
                 if (pesquisaEmpresa.Ordem.Equals("nomeDesc"))
                 {
@@ -72,9 +76,11 @@ namespace TrabalhoPratico.Controllers
                 {
                     task = task.OrderBy(e => e.Classificacao);
                 }
+            } else
+            {
+                task = task.OrderByDescending(e => e.Nome);
             }
             
-
             pesquisaEmpresa.ListaDeEmpresas = await task.ToListAsync();
 
             return View(pesquisaEmpresa);

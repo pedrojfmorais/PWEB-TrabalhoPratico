@@ -15,17 +15,21 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using TrabalhoPratico.Models;
+using TrabalhoPratico.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace TrabalhoPratico.Areas.Identity.Pages.Account
 {
     public class LoginModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly ApplicationDbContext _context;
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<ApplicationUser> signInManager, ApplicationDbContext context, ILogger<LoginModel> logger)
         {
             _signInManager = signInManager;
+            _context = context;
             _logger = logger;
         }
 
@@ -117,12 +121,23 @@ namespace TrabalhoPratico.Areas.Identity.Pages.Account
                 
                 if (result.Succeeded)
                 {
-                    var user = _signInManager.UserManager.Users.Where(u => u.Email== Input.Email).FirstOrDefault();
-
-                    if (user != null && user.ContaAtiva == false)
+                    var user = _context.Users.Include(u => u.Empresa).Where(u => u.Email == Input.Email).FirstOrDefault();
+                    if (user != null && (user.ContaAtiva == false || (user.Empresa != null && user.Empresa.EstadoSubscricao == false)))
                     {
                         await _signInManager.SignOutAsync();
-                        ModelState.AddModelError(string.Empty, "Conta de utilizador está desativada.");
+                        if(user.ContaAtiva == false)
+                        {
+                            ModelState.AddModelError(string.Empty, "Conta de utilizador está desativada.");
+                        }
+                        var roles = await _signInManager.UserManager.GetRolesAsync(user);
+
+                        if (
+                            user.Empresa != null && user.Empresa.EstadoSubscricao == false 
+                            && (roles.Contains("Gestor") || roles.Contains("Funcionario"))
+                            )
+                        {
+                            ModelState.AddModelError(string.Empty, "A sua empresa não tem a sua subscrição ativa.");
+                        }
                         return Page();
                     }
 
