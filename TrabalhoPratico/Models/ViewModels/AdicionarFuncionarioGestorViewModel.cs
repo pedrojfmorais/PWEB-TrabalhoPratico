@@ -8,6 +8,7 @@ namespace TrabalhoPratico.Models.ViewModels
     {
         [Display(Name = "Email", Prompt = "Introduza o eamil",
             Description = "Email do utilizador")]
+        [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
         
         [Display(Name = "Primeiro Nome", Prompt = "Introduza o primeiro nome",

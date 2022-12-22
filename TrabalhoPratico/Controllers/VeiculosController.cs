@@ -313,7 +313,7 @@ namespace TrabalhoPratico.Controllers
             }
 
             IQueryable<Veiculo> task = _context.Veiculo.Include(v => v.Categoria)
-                .Include(v => v.Empresa).Include(v => v.Localizacao);
+                .Include(v => v.Empresa).Include(v => v.Localizacao).Where(v => v.Disponivel);
             if (string.IsNullOrEmpty(pesquisaVeiculos.TextoAPesquisar))
             {
                 task = task.OrderBy(v => v.PrecoDia);
