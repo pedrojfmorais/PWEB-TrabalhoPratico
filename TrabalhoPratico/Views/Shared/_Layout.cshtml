@@ -32,6 +32,12 @@
                                 </li>
                                 @if (User.Identity.IsAuthenticated)
                                 {
+                                    if (User.IsInRole("Cliente"))
+                                    {
+                                        <li class="nav-item">
+                                            <a class="nav-link text-white" asp-area="" asp-controller="Reservas" asp-action="Historico">Histórico Reservas</a>
+                                        </li>
+                                    }
                                     if (User.IsInRole("Funcionario") || User.IsInRole("Gestor"))
                                     {
                                         <li class="nav-item">

@@ -106,6 +106,14 @@
                             @Html.DisplayFor(modelItem => item.PrecoDia)€
                             <small class="text-muted fw-light"></small>
                         </h1>
+                        @if (User.IsInRole("Cliente"))
+                        {
+                            <hr>
+                                <a class="w-100 btn btn-lg btn-outline-primary"
+                                    asp-controller="Reservas" asp-action="Create" asp-route-VeiculoId="@item.Id">
+                                Reservar
+                            </a>
+                        }
                     </div>
                 </div>
             </div>

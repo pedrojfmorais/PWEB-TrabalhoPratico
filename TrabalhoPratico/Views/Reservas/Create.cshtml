@@ -1,17 +1,23 @@
 ﻿@model TrabalhoPratico.Models.Reserva
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Reservar Veiculo";
 }
 
-<h1>Create</h1>
+<h1>Reservar Veiculo</h1>
 
-<h4>Reserva</h4>
+@if(ViewBag.error != null)
+{
+    <span class="text-danger">@ViewBag.error</span>
+}
+
 <hr />
+
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" name="VeiculoId" value="@Model.VeiculoId" />
             <div class="form-group">
                 <label asp-for="DataLevantamento" class="control-label"></label>
                 <input asp-for="DataLevantamento" class="form-control" />
@@ -21,29 +27,58 @@
                 <label asp-for="DataEntrega" class="control-label"></label>
                 <input asp-for="DataEntrega" class="form-control" />
                 <span asp-validation-for="DataEntrega" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Confirmada" /> @Html.DisplayNameFor(model => model.Confirmada)
-                </label>
-            </div>
+            </div> 
+            <p></p>
             <div class="form-group">
-                <label asp-for="VeiculoId" class="control-label"></label>
-                <select asp-for="VeiculoId" class ="form-control" asp-items="ViewBag.VeiculoId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="ClienteId" class="control-label"></label>
-                <select asp-for="ClienteId" class ="form-control" asp-items="ViewBag.ClienteId"></select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Reservar" class="btn btn-primary" />
+                <a asp-controller="Veiculos" asp-action="Search" class="btn btn-secondary">Voltar</a>
             </div>
         </form>
     </div>
-</div>
+    <div class="col-md-1"></div>
+    <div class="col-md-4 mb-7 text-center">
+        <div class="card mb-4 rounded-3 shadow-sm">
+            <div class="card-header py-3">
+                @if (Model.Veiculo.Avatar == null)
+                {
+                    <img id="MyAvatar" class="img-thumbnail" src="~/img/user.png" style="width: 200px; height: auto;" />
+                }
+                else
+                {
+                    <img id="MyAvatar" class="img-thumbnail"
+                     src="data:image/*;base64,@(Convert.ToBase64String(Model.Veiculo.Avatar))" style="width: 200px; height: auto;" />
+                }
+                <h2 class="my-0 fw-normal">
 
-<div>
-    <a asp-action="Index">Back to List</a>
+                    @Html.DisplayFor(modelItem => Model.Veiculo.Marca)
+                    <span> </span>
+                    @Html.DisplayFor(modelItem => Model.Veiculo.Modelo)
+
+                </h2>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mt-3 mb-4">
+                    <h5>Categoria: @Html.DisplayFor(modelItem => Model.Veiculo.Categoria.Nome)</h5>
+
+                    <h5>Localização: @Html.DisplayFor(modelItem => Model.Veiculo.Localizacao.Nome)</h5>
+
+                    <h5>
+                        Empresa:
+                        @Html.DisplayFor(modelItem => Model.Veiculo.Empresa.Nome)
+                        (@Html.DisplayFor(modelItem => Model.Veiculo.Empresa.Classificacao)/10
+                        <svg bootstrap-icon="Star" class="text-warning align-bottom" width="24" height="24"
+                             aria-label="Classificação"></svg>)
+
+                    </h5>
+                </ul>
+                <hr>
+                <h1 class="card-title pricing-card-title">
+                    @Html.DisplayFor(modelItem => Model.Veiculo.PrecoDia)€
+                    <small class="text-muted fw-light"></small>
+                </h1>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {

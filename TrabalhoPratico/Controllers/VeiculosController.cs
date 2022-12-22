@@ -473,10 +473,10 @@ namespace TrabalhoPratico.Controllers
                 foreach(var veiculo in pesquisaVeiculos.ListaDeVeiculos.ToList())
                 {
                     var res = await _context.Reserva.Include(r => r.Veiculo).Where(r => r.Veiculo.Id == veiculo.Id
-                    && ((DateTime.Compare(r.DataLevantamento, pesquisaVeiculos.DataLevantamento) > 0
-                    && DateTime.Compare(r.DataLevantamento, pesquisaVeiculos.DataEntrega) < 0)
-                    || (DateTime.Compare(r.DataEntrega, pesquisaVeiculos.DataLevantamento) > 0
-                    && DateTime.Compare(r.DataEntrega, pesquisaVeiculos.DataEntrega) < 0))
+                    && ((DateTime.Compare(r.DataLevantamento, pesquisaVeiculos.DataLevantamento) >= 0
+                    && DateTime.Compare(r.DataLevantamento, pesquisaVeiculos.DataEntrega) <= 0)
+                    || (DateTime.Compare(r.DataEntrega, pesquisaVeiculos.DataLevantamento) >= 0
+                    && DateTime.Compare(r.DataEntrega, pesquisaVeiculos.DataEntrega) <= 0))
                     ).FirstOrDefaultAsync();
 
                     if(res != null)
