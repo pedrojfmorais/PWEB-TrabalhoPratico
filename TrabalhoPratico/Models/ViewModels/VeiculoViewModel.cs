@@ -1,14 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Xml.Linq;
 
-namespace TrabalhoPratico.Models
+namespace TrabalhoPratico.Models.ViewModels
 {
-    public class Veiculo
+    public class VeiculoViewModel
     {
         public int Id { get; set; }
 
         [Display(Name = "Foto veiculo")]
         public byte[]? Avatar { get; set; }
+        public IFormFile AvatarFile { get; set; }
 
         [Display(Name = "Marca", Prompt = "Introduza a marca do veiculo",
             Description = "Marca do novo veiculo a inserir")]

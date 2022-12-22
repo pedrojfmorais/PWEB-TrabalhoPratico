@@ -156,9 +156,14 @@ namespace TrabalhoPratico.Controllers
         [Authorize(Roles = "Funcionario,Gestor")]
         public IActionResult Create()
         {
+            if (TempData["error"] != null)
+            {
+                ViewBag.error = TempData["error"].ToString();
+                TempData.Remove("error");
+            }
             ViewData["CategoriaId"] = new SelectList(_context.CategoriaVeiculo, "Id", "Nome");
             ViewBag.LocalizacaoId = new SelectList(_context.Localizacao, "Id", "Nome");
-            return View();
+            return View(new VeiculoViewModel());
         }
 
         // POST: Veiculos/Create
@@ -167,7 +172,7 @@ namespace TrabalhoPratico.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Funcionario,Gestor")]
-        public async Task<IActionResult> Create([Bind("Id,Marca,Modelo,Ano,Matricula,Quilometros,Disponivel,PrecoDia,CategoriaId,LocalizacaoId")] Veiculo veiculo)
+        public async Task<IActionResult> Create([Bind("Id,Marca,Modelo,Ano,Matricula,Quilometros,Disponivel,PrecoDia,CategoriaId,LocalizacaoId,Avatar,AvatarFile")] VeiculoViewModel veiculo)
         {
             veiculo.EmpresaId = (int)(await _userManager.GetUserAsync(User)).EmpresaId;
 
@@ -176,13 +181,62 @@ namespace TrabalhoPratico.Controllers
             ModelState.Remove("Empresa");
             if (ModelState.IsValid)
             {
-                _context.Add(veiculo);
+                if (veiculo.AvatarFile != null)
+                {
+                    if (veiculo.AvatarFile.Length > (200 * 1024))
+                    {
+                        TempData["error"] = "Error: Ficheiro demasiado grande";
+                        return View(veiculo);
+                    }
+                    // método a implementar – verifica se a extensão é .png,.jpg,.jpeg
+                    if (!isValidFileType(veiculo.AvatarFile.FileName))
+                    {
+                        TempData["error"] = "Error: Ficheiro não suportado";
+                        return View(veiculo);
+                    }
+                    using (var dataStream = new MemoryStream())
+                    {
+                        await veiculo.AvatarFile.CopyToAsync(dataStream);
+                        veiculo.Avatar = dataStream.ToArray();
+                    }
+                }
+
+                Veiculo v = new Veiculo()
+                {
+                    Marca= veiculo.Marca,
+                    Modelo= veiculo.Modelo,
+                    Ano= veiculo.Ano,
+                    Matricula= veiculo.Matricula,
+                    Quilometros= veiculo.Quilometros,
+                    Disponivel= veiculo.Disponivel,
+                    PrecoDia= veiculo.PrecoDia,
+                    CategoriaId= veiculo.CategoriaId,
+                    LocalizacaoId= veiculo.LocalizacaoId,
+                    Avatar= veiculo.Avatar,
+                    EmpresaId= veiculo.EmpresaId,
+                };
+
+                _context.Add(v);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             ViewBag.CategoriaId = new SelectList(_context.CategoriaVeiculo, "Id", "Nome", veiculo.CategoriaId);
             ViewBag.LocalizacaoId = new SelectList(_context.Localizacao, "Id", "Nome", veiculo.LocalizacaoId);
             return View(veiculo);
+        }
+
+
+        //verifica se a extensão é .png,.jpg,.jpeg
+        public bool isValidFileType(string filename)
+        {
+            List<string> fileExtensions = new List<string>() { "png", "jpg", "jpeg" };
+            List<string> filenameSeparated = filename.Split('.').Reverse().ToList<string>();
+
+            foreach (var extension in fileExtensions)
+                if (extension.Equals(filenameSeparated[0]))
+                    return true;
+
+            return false;
         }
 
         // GET: Veiculos/Edit/5
@@ -199,9 +253,25 @@ namespace TrabalhoPratico.Controllers
             {
                 return NotFound();
             }
+
+            VeiculoViewModel v = new VeiculoViewModel()
+            {
+                Marca= veiculo.Marca,
+                Modelo= veiculo.Modelo,
+                Ano= veiculo.Ano,
+                Matricula= veiculo.Matricula,
+                Quilometros= veiculo.Quilometros,
+                Disponivel= veiculo.Disponivel,
+                PrecoDia= veiculo.PrecoDia,
+                CategoriaId= veiculo.CategoriaId,
+                LocalizacaoId= veiculo.LocalizacaoId,
+                Avatar= veiculo.Avatar,
+                EmpresaId= veiculo.EmpresaId,
+            };
+
             ViewData["CategoriaId"] = new SelectList(_context.CategoriaVeiculo, "Id", "Nome", veiculo.CategoriaId);
             ViewData["LocalizacaoId"] = new SelectList(_context.Localizacao, "Id", "Nome", veiculo.LocalizacaoId);
-            return View(veiculo);
+            return View(v);
         }
 
         // POST: Veiculos/Edit/5
@@ -210,7 +280,9 @@ namespace TrabalhoPratico.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Funcionario,Gestor")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Marca,Modelo,Ano,Matricula,Quilometros,Disponivel,PrecoDia,CategoriaId,LocalizacaoId")] Veiculo veiculo)
+        public async Task<IActionResult> Edit(
+            int id, 
+            [Bind("Id,Marca,Modelo,Ano,Matricula,Quilometros,Disponivel,PrecoDia,CategoriaId,LocalizacaoId,Avatar,AvatarFile")] VeiculoViewModel veiculo)
         {
             if (id != veiculo.Id)
             {
@@ -225,7 +297,43 @@ namespace TrabalhoPratico.Controllers
             {
                 try
                 {
-                    _context.Update(veiculo);
+                    if (veiculo.AvatarFile != null)
+                    {
+                        if (veiculo.AvatarFile.Length > (200 * 1024))
+                        {
+                            TempData["error"] = "Error: Ficheiro demasiado grande";
+                            return View(veiculo);
+                        }
+                        // método a implementar – verifica se a extensão é .png,.jpg,.jpeg
+                        if (!isValidFileType(veiculo.AvatarFile.FileName))
+                        {
+                            TempData["error"] = "Error: Ficheiro não suportado";
+                            return View(veiculo);
+                        }
+                        using (var dataStream = new MemoryStream())
+                        {
+                            await veiculo.AvatarFile.CopyToAsync(dataStream);
+                            veiculo.Avatar = dataStream.ToArray();
+                        }
+                    }
+
+                    Veiculo v = new Veiculo()
+                    {
+                        Id = veiculo.Id,
+                        Marca= veiculo.Marca,
+                        Modelo= veiculo.Modelo,
+                        Ano= veiculo.Ano,
+                        Matricula= veiculo.Matricula,
+                        Quilometros= veiculo.Quilometros,
+                        Disponivel= veiculo.Disponivel,
+                        PrecoDia= veiculo.PrecoDia,
+                        CategoriaId= veiculo.CategoriaId,
+                        LocalizacaoId= veiculo.LocalizacaoId,
+                        Avatar= veiculo.Avatar,
+                        EmpresaId= veiculo.EmpresaId,
+                    };
+
+                    _context.Update(v);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)

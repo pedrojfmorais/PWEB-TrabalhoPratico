@@ -36,6 +36,9 @@
     <thead>
         <tr>
             <th>
+                Foto
+            </th>
+            <th>
                 Veiculo
             </th>
             <th>
@@ -56,6 +59,17 @@
     <tbody>
 @foreach (var item in Model.ListaDeVeiculos) {
         <tr>
+            <td>
+                @if (item.Avatar == null)
+                {
+                    <img id="MyAvatar" class="img-thumbnail" src="~/img/user.png" style="height:75px;width:auto" />
+                }
+                else
+                {
+                    <img id="MyAvatar" class="img-thumbnail" style="height:75px;width:auto"
+                            src="data:image/*;base64,@(Convert.ToBase64String(item.Avatar))" />
+                }
+            </td>
             <td>
                 @if (string.IsNullOrWhiteSpace(Model.TextoAPesquisar))
                 {

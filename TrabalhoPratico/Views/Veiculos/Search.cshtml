@@ -53,7 +53,15 @@
             <div class="col">
                 <div class="card mb-4 rounded-3 shadow-sm">
                     <div class="card-header py-3">
-                        <img src="..." class="card-img-top" alt="...">
+                        @if (item.Avatar == null)
+                        {
+                            <img id="MyAvatar" class="img-thumbnail" src="~/img/user.png" style="width: 200px; height: auto;" />
+                        }
+                        else
+                        {
+                            <img id="MyAvatar" class="img-thumbnail"
+                                src="data:image/*;base64,@(Convert.ToBase64String(item.Avatar))" style="width: 200px; height: auto;" />
+                        }
                         <h2 class="my-0 fw-normal">
                             @if (string.IsNullOrWhiteSpace(Model.TextoAPesquisar))
                             {
