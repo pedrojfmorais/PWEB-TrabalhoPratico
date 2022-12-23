@@ -57,8 +57,27 @@ namespace TrabalhoPratico.Areas.Identity.Pages.Account.Manage
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Phone]
-            [Display(Name = "Phone number")]
+            [Display(Name = "Número Telefone")]
             public string PhoneNumber { get; set; }
+
+            [Display(Name = "Primeiro Nome", Prompt = "Introduza o primeiro nome",
+            Description = "Primeiro nome do utilizador")]
+            public string PrimeiroNome { get; set; }
+
+            [Display(Name = "Último Nome", Prompt = "Introduza o último nome",
+                Description = "Último nome do utilizador")]
+            public string UltimoNome { get; set; }
+
+            [Display(Name = "Data de Nascimento", Prompt = "Introduza a data se nascimento",
+                Description = "Data se nascimento do utilizador")]
+            [PersonalData, DataType(DataType.Date)]
+            public DateTime DataNascimento { get; set; }
+
+            [Display(Name = "NIF", Prompt = "Introduza o NIF",
+                Description = "Número de Indentificação Fiscal do utilizador")]
+            [PersonalData]
+            [RegularExpression("^\\d{9}$", ErrorMessage = "O NIF tem de ter 9 digitos!")]
+            public int NIF { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
@@ -70,7 +89,11 @@ namespace TrabalhoPratico.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                PrimeiroNome = user.PrimeiroNome,
+                UltimoNome = user.UltimoNome,
+                NIF = user.NIF,
+                DataNascimento = user.DataNascimento
             };
         }
 
@@ -109,6 +132,31 @@ namespace TrabalhoPratico.Areas.Identity.Pages.Account.Manage
                     StatusMessage = "Unexpected error when trying to set phone number.";
                     return RedirectToPage();
                 }
+            }
+
+            if (user.PrimeiroNome != Input.PrimeiroNome)
+            {
+                user.PrimeiroNome = Input.PrimeiroNome;
+                await _userManager.UpdateAsync(user);
+            }
+
+
+            if (user.UltimoNome != Input.UltimoNome)
+            {
+                user.UltimoNome = Input.UltimoNome;
+                await _userManager.UpdateAsync(user);
+            }
+
+            if (user.DataNascimento != Input.DataNascimento)
+            {
+                user.DataNascimento = Input.DataNascimento;
+                await _userManager.UpdateAsync(user);
+            }
+
+            if (user.NIF != Input.NIF)
+            {
+                user.NIF = Input.NIF;
+                await _userManager.UpdateAsync(user);
             }
 
             await _signInManager.RefreshSignInAsync(user);

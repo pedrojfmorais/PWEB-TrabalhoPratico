@@ -8,10 +8,12 @@ namespace TrabalhoPratico.Models
     {
         [Display(Name = "Primeiro Nome", Prompt = "Introduza o primeiro nome",
             Description = "Primeiro nome do utilizador")]
+        [PersonalData]
         public string PrimeiroNome { get; set; }
 
         [Display(Name = "Último Nome", Prompt = "Introduza o último nome",
             Description = "Último nome do utilizador")]
+        [PersonalData]
         public string UltimoNome { get; set; }
 
         [Display(Name = "Data de Nascimento", Prompt = "Introduza a data se nascimento",
@@ -30,6 +32,8 @@ namespace TrabalhoPratico.Models
 
         public int? EmpresaId { get; set; }
         public Empresa? Empresa { get; set; }
+
+        public ICollection<Reserva> Reservas { get; set; }
         public ICollection<ReservaEstadoVeiculoLevantamento> VeiculosEntreguesAClientes { get; set; }
     }
 }
