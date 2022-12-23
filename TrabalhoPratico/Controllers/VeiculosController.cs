@@ -298,12 +298,17 @@ namespace TrabalhoPratico.Controllers
             ViewData["CategoriaId"] = new SelectList(_context.CategoriaVeiculo, "Id", "Nome", veiculo.CategoriaId);
             ViewData["LocalizacaoId"] = new SelectList(_context.Localizacao, "Id", "Nome", veiculo.LocalizacaoId);
 
+            var veiculoDB = _context.Veiculo.Where(v=> id == v.Id).First();
+            veiculo.Avatar = veiculoDB.Avatar;
+            _context.Entry(veiculoDB).State = EntityState.Detached;
+
             if (id != veiculo.Id)
             {
                 return NotFound();
             }
             veiculo.EmpresaId = (int)(await _userManager.GetUserAsync(User)).EmpresaId;
 
+            ModelState.Remove("AvatarFile");
             ModelState.Remove("Categoria");
             ModelState.Remove("Localizacao");
             ModelState.Remove("Empresa");
@@ -343,7 +348,7 @@ namespace TrabalhoPratico.Controllers
                         PrecoDia= veiculo.PrecoDia,
                         CategoriaId= veiculo.CategoriaId,
                         LocalizacaoId= veiculo.LocalizacaoId,
-                        Avatar= veiculo.Avatar,
+                        Avatar = veiculo.Avatar,
                         EmpresaId= veiculo.EmpresaId,
                     };
 
