@@ -1,99 +1,73 @@
 ﻿@model TrabalhoPratico.Models.Veiculo
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalhes Veiculo";
 }
 
-<h1>Details</h1>
+<div class="row d-flex justify-content-center">
+    <div class="col-md-4 text-center">
+        <h1>@ViewData["Title"]</h1>
+        <div class="card mb-4 rounded-3 shadow-sm">
+            <div class="card-header py-3">
+                @if (Model.Avatar == null)
+                {
+                    <img id="MyAvatar" class="img-thumbnail" src="~/img/user.png" style="width: 200px; height: auto;" />
+                }
+                else
+                {
+                    <img id="MyAvatar" class="img-thumbnail"
+                     src="data:image/*;base64,@(Convert.ToBase64String(Model.Avatar))" style="width: 200px; height: auto;" />
+                }
+                <h2 class="my-0 fw-normal">
 
-<div>
-    <h4>Veiculo</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            Foto
-        </dt>
-        <dd class = "col-sm-10">
-            @if (Model.Avatar == null)
-            {
-                <img id="MyAvatar" class="img-thumbnail" src="~/img/user.png" style="height:75px;width:auto" />
-            }
-            else
-            {
-                <img id="MyAvatar" class="img-thumbnail" style="height:75px;width:auto"
-                    src="data:image/*;base64,@(Convert.ToBase64String(Model.Avatar))" />
-            }
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Marca)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Marca)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Modelo)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Modelo)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Ano)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Ano)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Matricula)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Matricula)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Quilometros)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Quilometros)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Disponivel)
-        </dt>
-        <dd class = "col-sm-10">
-            @if (Model.Disponivel)
-            {
-                <span class="text-success fw-bold">Ativo</span>
-            }
-            else
-            {
-                <span class="text-danger fw-bold">Inativo</span>
-            }
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PrecoDia)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PrecoDia)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Categoria)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Categoria.Nome)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Localizacao)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Localizacao.Nome)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Empresa)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Empresa.Nome)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning">Editar</a>
-    <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+                    @Html.DisplayFor(modelItem => Model.Marca)
+                    <span> </span>
+                    @Html.DisplayFor(modelItem => Model.Modelo)
+                    (@Html.DisplayFor(modelItem => Model.Matricula))
+
+                </h2>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mt-3 mb-4">
+                    <h5>Ano: @Html.DisplayFor(modelItem => Model.Ano)</h5>
+
+                    <h5>Quilometros: @Html.DisplayFor(modelItem => Model.Quilometros)</h5>
+                </ul>
+                <hr>
+                @if (Model.Disponivel)
+                {
+                    <h4 class="text-success fw-bold">Ativo</h4>
+                }
+                else
+                {
+                    <h4 class="text-danger fw-bold">Inativo</h4>
+                }
+                <hr />
+                <ul class="list-unstyled mt-3 mb-4">
+                    <h5>Categoria: @Html.DisplayFor(modelItem => Model.Categoria.Nome)</h5>
+
+                    <h5>Localização: @Html.DisplayFor(modelItem => Model.Localizacao.Nome)</h5>
+
+                    <h5>
+                        Empresa:
+                        @Html.DisplayFor(modelItem => Model.Empresa.Nome)
+                        (@Html.DisplayFor(modelItem => Model.Empresa.Classificacao)/10
+                        <svg bootstrap-icon="Star" class="text-warning align-bottom" width="24" height="24"
+                             aria-label="Classificação"></svg>)
+
+                    </h5>
+                </ul>
+                <hr>
+                <h1 class="card-title pricing-card-title">
+                    @Html.DisplayFor(modelItem => Model.PrecoDia)€
+                    <small class="text-muted fw-light"></small>
+                </h1>
+            </div>
+        </div>
+
+        <div>
+            <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning">Editar</a>
+            <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+        </div>
+    </div>
 </div>

@@ -34,7 +34,8 @@ namespace TrabalhoPratico.Controllers
 
         // GET: Reservas
         [Authorize(Roles = "Funcionario,Gestor")]
-        public async Task<IActionResult> Index([Bind("TextoAPesquisar,Ordem,CategoriaId,DataLevantamento,DataEntrega")] PesquisaReservasGestorFuncionarioViewModel pesquisaReservas)
+        public async Task<IActionResult> Index([Bind("TextoAPesquisar,Ordem,CategoriaId,DataLevantamento,DataEntrega")] PesquisaReservasGestorFuncionarioViewModel pesquisaReservas,
+            string Categoria)
         {
             var user = await _userManager.GetUserAsync(User);
 
@@ -47,14 +48,13 @@ namespace TrabalhoPratico.Controllers
                 .Include(r => r.Veiculo.Empresa)
                 .Where(r => r.Veiculo.EmpresaId == user.EmpresaId);
 
-
             if (pesquisaReservas.DataLevantamento == DateTime.Parse("01/01/0001 00:00:00"))
             {
-                pesquisaReservas.DataLevantamento = DateTime.Now;
+                pesquisaReservas.DataLevantamento = DateTime.MinValue;
             }
             if (pesquisaReservas.DataEntrega == DateTime.Parse("01/01/0001 00:00:00"))
             {
-                pesquisaReservas.DataEntrega = DateTime.Now;
+                pesquisaReservas.DataEntrega = DateTime.MaxValue;
             }
 
             if (string.IsNullOrWhiteSpace(pesquisaReservas.TextoAPesquisar))
@@ -64,16 +64,24 @@ namespace TrabalhoPratico.Controllers
             else
             {
                 task = task
-                    .Where(r => (
+                    .Where(r => 
                         r.Veiculo.Marca.Contains(pesquisaReservas.TextoAPesquisar)
                         || r.Veiculo.Modelo.Contains(pesquisaReservas.TextoAPesquisar)
                         || r.Veiculo.Matricula.Contains(pesquisaReservas.TextoAPesquisar)
                         || r.Cliente.UserName.Contains(pesquisaReservas.TextoAPesquisar)
-                    )
-                    && r.Veiculo.CategoriaId == pesquisaReservas.CategoriaId
-                    && DateTime.Compare(r.DataLevantamento, pesquisaReservas.DataLevantamento) > 0
-                    && DateTime.Compare(r.DataEntrega, pesquisaReservas.DataEntrega) < 0
                     );
+            }
+
+            task = task.Where(r => DateTime.Compare(r.DataLevantamento, pesquisaReservas.DataLevantamento) > 0
+                    && DateTime.Compare(r.DataEntrega, pesquisaReservas.DataEntrega) < 0);
+
+            if (Categoria != null)
+            {
+                pesquisaReservas.CategoriaId = int.Parse(Categoria);
+            }
+            if (pesquisaReservas.CategoriaId != 0)
+            {
+                task = task.Where(r => r.Veiculo.CategoriaId == pesquisaReservas.CategoriaId);
             }
 
             if (pesquisaReservas.Ordem != null)
@@ -88,7 +96,7 @@ namespace TrabalhoPratico.Controllers
                 }
             }
 
-            ViewBag.CategoriaId = new SelectList(_context.CategoriaVeiculo.ToList(), "Id", "Nome");
+            ViewBag.CategoriaId = _context.CategoriaVeiculo.ToList();
 
             pesquisaReservas.ListaDeReservas = await task.ToListAsync();
 
@@ -378,16 +386,86 @@ namespace TrabalhoPratico.Controllers
             {
                 _context.Add(reserva);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Historico));
+                return RedirectToAction(nameof(HistoricoAsync));
             }
 
             return View(reserva);
         }
 
         [Authorize(Roles = "Cliente")]
-        public IActionResult Historico()
+        public async Task<IActionResult> HistoricoAsync([Bind("TextoAPesquisar,Ordem,CategoriaId,DataLevantamento,DataEntrega")] PesquisaHistoricoReservasViewModel pesquisaReservas,
+            string Categoria)
         {
-            return View();
+            var user = await _userManager.GetUserAsync(User);
+
+            IQueryable<Reserva> task = _context.Reserva
+                .Include(r => r.Cliente)
+                .Include(r => r.Veiculo)
+                .Include(r => r.Veiculo.Categoria)
+                .Include(r => r.ReservaEstadoVeiculoLevantamento)
+                .Include(r => r.ReservaEstadoVeiculoEntrega)
+                .Include(r => r.Veiculo.Empresa)
+                .Where(r => r.ClienteId == user.Id);
+
+
+            if (pesquisaReservas.DataLevantamento == DateTime.Parse("01/01/0001 00:00:00"))
+            {
+                pesquisaReservas.DataLevantamento = DateTime.MinValue;
+            }
+            if (pesquisaReservas.DataEntrega == DateTime.Parse("01/01/0001 00:00:00"))
+            {
+                pesquisaReservas.DataEntrega = DateTime.MaxValue;
+            }
+
+            if (string.IsNullOrWhiteSpace(pesquisaReservas.TextoAPesquisar))
+            {
+                task = task.OrderByDescending(r => r.Cliente.UserName).ThenByDescending(r => r.Veiculo.Matricula).ThenByDescending(r => r.Veiculo.Categoria.Nome);
+            }
+            else
+            {
+                task = task
+                    .Where(r => 
+                        r.Veiculo.Marca.Contains(pesquisaReservas.TextoAPesquisar)
+                        || r.Veiculo.Modelo.Contains(pesquisaReservas.TextoAPesquisar)
+                        || r.Veiculo.Matricula.Contains(pesquisaReservas.TextoAPesquisar)
+                        || r.Cliente.UserName.Contains(pesquisaReservas.TextoAPesquisar)
+                    );
+            }
+
+            task = task.Where(r => DateTime.Compare(r.DataLevantamento, pesquisaReservas.DataLevantamento) > 0
+                    && DateTime.Compare(r.DataEntrega, pesquisaReservas.DataEntrega) < 0);
+
+            if (Categoria != null)
+            {
+                pesquisaReservas.CategoriaId = int.Parse(Categoria);
+            }
+            if (pesquisaReservas.CategoriaId != 0)
+            {
+                task = task.Where(r => r.Veiculo.CategoriaId == pesquisaReservas.CategoriaId);
+            }
+
+            if (pesquisaReservas.Ordem != null)
+            {
+                if (pesquisaReservas.Ordem.Equals("desc"))
+                {
+                    task = task.OrderByDescending(r => r.Cliente.UserName).ThenByDescending(r => r.Veiculo.Matricula).ThenByDescending(r => r.Veiculo.Categoria.Nome);
+                }
+                else if (pesquisaReservas.Ordem.Equals("asc"))
+                {
+                    task = task.OrderBy(r => r.Cliente.UserName).ThenBy(r => r.Veiculo.Matricula).ThenBy(r => r.Veiculo.Categoria.Nome);
+                }
+            }
+
+            ViewBag.CategoriaId = _context.CategoriaVeiculo.ToList();
+
+            pesquisaReservas.ListaDeReservas = await task.ToListAsync();
+
+            if (pesquisaReservas.DataEntrega < pesquisaReservas.DataLevantamento)
+            {
+                ViewBag.error = "Datas de levantamento e entrega incorretas";
+            }
+
+            return View(pesquisaReservas);
         }
 
         // Cliente
@@ -403,6 +481,9 @@ namespace TrabalhoPratico.Controllers
             var reserva = await _context.Reserva
                 .Include(r => r.Cliente)
                 .Include(r => r.Veiculo)
+                .Include(r => r.Veiculo.Categoria)
+                .Include(r => r.Veiculo.Localizacao)
+                .Include(r => r.Veiculo.Empresa)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (reserva == null)
             {

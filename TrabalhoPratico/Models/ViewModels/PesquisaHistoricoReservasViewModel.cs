@@ -3,8 +3,8 @@ using System.Xml.Linq;
 
 namespace TrabalhoPratico.Models.ViewModels
 {
-    public class PesquisaReservasGestorFuncionarioViewModel
-    {
+    public class PesquisaHistoricoReservasViewModel
+    {    
         public List<Reserva> ListaDeReservas { get; set; }
         [Display(Name = "Pesquisa de veiculo/cliente:", Prompt = "introduza o texto a pesquisar")]
         public string TextoAPesquisar { get; set; }

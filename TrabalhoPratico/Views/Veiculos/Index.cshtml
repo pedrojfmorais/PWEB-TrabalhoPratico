@@ -1,10 +1,13 @@
 ﻿@model TrabalhoPratico.Models.ViewModels.PesquisaFrotaVeiculosViewModel
 
 @{
-    ViewData["Title"] = "Veiculos";
+    ViewData["Title"] = "Lista de Veiculos";
 }
 
-<h1>Lista de Veiculos</h1>
+<div class="pricing-header p-3 pb-md-4 mx-auto text-center">
+    <h1 class="display-4 fw-normal">@ViewData["Title"]</h1>
+</div>
+<hr />
 
 <p>
     <a asp-action="Create" class="btn btn-success">Adicionar veiculo</a>
@@ -12,13 +15,12 @@
 
 <form method="post">
     <input type="hidden" asp-for="@Model.Disponivel" />
+    <input type="hidden" asp-for="@Model.CategoriaId" />
     <label asp-for="TextoAPesquisar" class="control-label"></label>
     <input asp-for="TextoAPesquisar"/>
     <button id="botaoPesquisa" type="submit" class="btn btn-default">
         <svg bootstrap-icon="Search" class="text-warning" width="24" height="24" aria-label="Search"></svg>
     </button>
-    <label for="CategoriaId">Categoria:</label>
-    <select name="CategoriaId" asp-for="@Model.CategoriaId" asp-items="ViewBag.CategoriaId"></select>
     <label for="ordem">Ordenação:</label>
     <select name="Ordem" asp-for="Ordem" onchange="this.form.submit()">
         <option value="desc">Veiculo Descendente</option>
@@ -46,6 +48,22 @@
             <input type="radio" id="disponivelNao" name="Disponivel" value="disponivelNao" onchange="this.form.submit()"
                    @(Model.Disponivel != null ? Model.Disponivel.Equals("disponivelNao") ? "checked" : "" : "") />
             <label for="disponivelNao">Não Disponiveis</label><br />
+        </form>
+        <p></p>
+        <h5>Categoria:</h5>
+        <form method="post">
+            <input type="hidden" asp-for="@Model.TextoAPesquisar" />
+            <input type="hidden" asp-for="@Model.Disponivel" />
+            <input type="hidden" asp-for="@Model.Ordem" />
+            <input type="radio" id="Categoria0" name="Categoria" value="0" onchange="this.form.submit()"
+                   @(Model.CategoriaId == 0 ? "checked" : "") />
+            <label for="Categoria0">Todas</label> <br>
+            @foreach (CategoriaVeiculo categoria in ViewBag.CategoriaId)
+            {
+                <input type="radio" id="Categoria@(categoria.Id)" name="Categoria" value="@categoria.Id" onchange="this.form.submit()"
+                   @(Model.CategoriaId == categoria.Id ? "checked" : "") />
+                <label for="Categoria@(categoria.Id)">@categoria.Nome</label> <br>
+            }           
         </form>
     </div>
     <div class="col-md-10">

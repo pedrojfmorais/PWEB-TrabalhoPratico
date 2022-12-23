@@ -30,7 +30,8 @@ namespace TrabalhoPratico.Controllers
         // GET: Veiculos
         [Authorize(Roles = "Funcionario,Gestor")]
         public async Task<IActionResult> Index(
-            [Bind("TextoAPesquisar,Ordem,Disponivel,CategoriaId")] PesquisaFrotaVeiculosViewModel pesquisaVeiculos)
+            [Bind("TextoAPesquisar,Ordem,CategoriaId,Disponivel")] PesquisaFrotaVeiculosViewModel pesquisaVeiculos,
+            string Categoria)
         {
             if (TempData["error"] != null)
             {
@@ -49,12 +50,19 @@ namespace TrabalhoPratico.Controllers
             else
             {
                 task = task
-                    .Where(e => (
+                    .Where(e => 
                         e.Marca.Contains(pesquisaVeiculos.TextoAPesquisar)
                         || e.Modelo.Contains(pesquisaVeiculos.TextoAPesquisar)
                         || e.Matricula.Contains(pesquisaVeiculos.TextoAPesquisar)
-                        || e.Ano.ToString().Contains(pesquisaVeiculos.TextoAPesquisar)
-                    ) && e.CategoriaId == pesquisaVeiculos.CategoriaId);
+                        || e.Ano.ToString().Contains(pesquisaVeiculos.TextoAPesquisar));
+            }
+            if (Categoria != null)
+            {
+                pesquisaVeiculos.CategoriaId = int.Parse(Categoria);
+            }
+            if (pesquisaVeiculos.CategoriaId != 0)
+            {
+                task = task.Where(e => e.CategoriaId == pesquisaVeiculos.CategoriaId);
             }
 
             if (pesquisaVeiculos.Disponivel != null)
@@ -80,7 +88,7 @@ namespace TrabalhoPratico.Controllers
                 }
             }
 
-            ViewBag.CategoriaId = new SelectList(_context.CategoriaVeiculo.ToList(), "Id", "Nome");
+            ViewBag.CategoriaId = _context.CategoriaVeiculo.ToList();
 
             pesquisaVeiculos.ListaDeVeiculos = await task.ToListAsync();
 
@@ -287,6 +295,9 @@ namespace TrabalhoPratico.Controllers
             int id, 
             [Bind("Id,Marca,Modelo,Ano,Matricula,Quilometros,Disponivel,PrecoDia,CategoriaId,LocalizacaoId,Avatar,AvatarFile")] VeiculoViewModel veiculo)
         {
+            ViewData["CategoriaId"] = new SelectList(_context.CategoriaVeiculo, "Id", "Nome", veiculo.CategoriaId);
+            ViewData["LocalizacaoId"] = new SelectList(_context.Localizacao, "Id", "Nome", veiculo.LocalizacaoId);
+
             if (id != veiculo.Id)
             {
                 return NotFound();
@@ -304,13 +315,13 @@ namespace TrabalhoPratico.Controllers
                     {
                         if (veiculo.AvatarFile.Length > (200 * 1024))
                         {
-                            TempData["error"] = "Error: Ficheiro demasiado grande";
+                            ViewData["error"] = "Error: Ficheiro demasiado grande";
                             return View(veiculo);
                         }
                         // método a implementar – verifica se a extensão é .png,.jpg,.jpeg
                         if (!isValidFileType(veiculo.AvatarFile.FileName))
                         {
-                            TempData["error"] = "Error: Ficheiro não suportado";
+                            ViewData["error"] = "Error: Ficheiro não suportado";
                             return View(veiculo);
                         }
                         using (var dataStream = new MemoryStream())
@@ -352,8 +363,6 @@ namespace TrabalhoPratico.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoriaId"] = new SelectList(_context.CategoriaVeiculo, "Id", "Nome", veiculo.CategoriaId);
-            ViewData["LocalizacaoId"] = new SelectList(_context.Localizacao, "Id", "Nome", veiculo.LocalizacaoId);
             return View(veiculo);
         }
 
@@ -406,7 +415,8 @@ namespace TrabalhoPratico.Controllers
         }
     
         public async Task<IActionResult> Search(
-            [Bind("TextoAPesquisar,Ordem,CategoriaId,EmpresaId,DataLevantamento,DataEntrega")] PesquisaVeiculosViewModel pesquisaVeiculos)
+            [Bind("TextoAPesquisar,Ordem,CategoriaId,EmpresaId,DataLevantamento,DataEntrega")] PesquisaVeiculosViewModel pesquisaVeiculos,
+            string Categoria, string Empresa)
         {
             if (TempData["error"] != null)
             {
@@ -414,11 +424,11 @@ namespace TrabalhoPratico.Controllers
                 TempData.Remove("error");
             }
 
-            if(pesquisaVeiculos.DataLevantamento == DateTime.Parse("01/01/0001 00:00:00"))
+            if (pesquisaVeiculos.DataLevantamento == DateTime.Parse("01/01/0001 00:00:00"))
             {
                 pesquisaVeiculos.DataLevantamento = DateTime.Now;
             }
-            if(pesquisaVeiculos.DataEntrega == DateTime.Parse("01/01/0001 00:00:00"))
+            if (pesquisaVeiculos.DataEntrega == DateTime.Parse("01/01/0001 00:00:00"))
             {
                 pesquisaVeiculos.DataEntrega = DateTime.Now;
             }
@@ -438,15 +448,30 @@ namespace TrabalhoPratico.Controllers
                         || e.Localizacao.Nome.Contains(pesquisaVeiculos.TextoAPesquisar)
                     ));
 
-                if(pesquisaVeiculos.EmpresaId != 0)
-                {
-                    task = task.Where(e => e.EmpresaId == pesquisaVeiculos.EmpresaId);
-                }
                 
-                if(pesquisaVeiculos.CategoriaId != 0)
+
+                if (pesquisaVeiculos.CategoriaId != 0)
                 {
                     task = task.Where(e => e.CategoriaId == pesquisaVeiculos.CategoriaId);
                 }
+            }
+
+            if (Categoria != null)
+            {
+                pesquisaVeiculos.CategoriaId = int.Parse(Categoria);
+            }
+            if (pesquisaVeiculos.CategoriaId != 0)
+            {
+                task = task.Where(r => r.CategoriaId == pesquisaVeiculos.CategoriaId);
+            }
+
+            if (Empresa != null)
+            {
+                pesquisaVeiculos.EmpresaId = int.Parse(Empresa);
+            }
+            if (pesquisaVeiculos.EmpresaId != 0)
+            {
+                task = task.Where(r => r.EmpresaId == pesquisaVeiculos.EmpresaId);
             }
 
             if (pesquisaVeiculos.Ordem != null)
@@ -465,33 +490,29 @@ namespace TrabalhoPratico.Controllers
                 }
             }
 
-            ViewBag.CategoriaId = new SelectList(_context.CategoriaVeiculo.ToList(), "Id", "Nome");
-            ViewBag.EmpresaId = new SelectList(_context.Empresa.ToList(), "Id", "Nome");
+            ViewBag.CategoriaId = _context.CategoriaVeiculo.ToList();
+            ViewBag.EmpresaId = _context.Empresa.ToList();
 
             pesquisaVeiculos.ListaDeVeiculos = await task.ToListAsync();
 
-            if (!string.IsNullOrEmpty(pesquisaVeiculos.TextoAPesquisar))
+            foreach(var veiculo in pesquisaVeiculos.ListaDeVeiculos.ToList())
             {
+                var res = await _context.Reserva.Include(r => r.Veiculo).Where(r => r.Veiculo.Id == veiculo.Id
+                && ((DateTime.Compare(r.DataLevantamento, pesquisaVeiculos.DataLevantamento) >= 0
+                && DateTime.Compare(r.DataLevantamento, pesquisaVeiculos.DataEntrega) <= 0)
+                || (DateTime.Compare(r.DataEntrega, pesquisaVeiculos.DataLevantamento) >= 0
+                && DateTime.Compare(r.DataEntrega, pesquisaVeiculos.DataEntrega) <= 0))
+                ).FirstOrDefaultAsync();
 
-                foreach(var veiculo in pesquisaVeiculos.ListaDeVeiculos.ToList())
+                if(res != null)
                 {
-                    var res = await _context.Reserva.Include(r => r.Veiculo).Where(r => r.Veiculo.Id == veiculo.Id
-                    && ((DateTime.Compare(r.DataLevantamento, pesquisaVeiculos.DataLevantamento) >= 0
-                    && DateTime.Compare(r.DataLevantamento, pesquisaVeiculos.DataEntrega) <= 0)
-                    || (DateTime.Compare(r.DataEntrega, pesquisaVeiculos.DataLevantamento) >= 0
-                    && DateTime.Compare(r.DataEntrega, pesquisaVeiculos.DataEntrega) <= 0))
-                    ).FirstOrDefaultAsync();
-
-                    if(res != null)
-                    {
-                        pesquisaVeiculos.ListaDeVeiculos.Remove(veiculo);
-                    }
+                    pesquisaVeiculos.ListaDeVeiculos.Remove(veiculo);
                 }
+            }
 
-                if(pesquisaVeiculos.DataEntrega < pesquisaVeiculos.DataLevantamento)
-                {
-                    ViewBag.error = "Datas de levantamento e entrega incorretas";
-                }
+            if(pesquisaVeiculos.DataEntrega < pesquisaVeiculos.DataLevantamento)
+            {
+                ViewBag.error = "Datas de levantamento e entrega incorretas";
             }
 
             return View(pesquisaVeiculos);

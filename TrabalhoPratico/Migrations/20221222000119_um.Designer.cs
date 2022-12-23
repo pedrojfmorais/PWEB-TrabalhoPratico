@@ -12,7 +12,7 @@ using TrabalhoPratico.Data;
 namespace TrabalhoPratico.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221222205621_um")]
+    [Migration("20221222000119_um")]
     partial class um
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -424,9 +424,6 @@ namespace TrabalhoPratico.Migrations
 
                     b.Property<int>("Ano")
                         .HasColumnType("int");
-
-                    b.Property<byte[]>("Avatar")
-                        .HasColumnType("varbinary(max)");
 
                     b.Property<int>("CategoriaId")
                         .HasColumnType("int");
