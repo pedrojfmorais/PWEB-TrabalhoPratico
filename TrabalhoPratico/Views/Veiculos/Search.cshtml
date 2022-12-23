@@ -129,9 +129,20 @@
                                 <h5>
                                     Empresa:
                                     @Html.DisplayFor(modelItem => item.Empresa.Nome)
-                                    (@Html.DisplayFor(modelItem => item.Empresa.Classificacao)/10
-                                    <svg bootstrap-icon="Star" class="text-warning align-bottom" width="24" height="24" 
-                                    aria-label="Classificação"></svg>)
+                                    @{
+                                        int sum = 0;
+                                        foreach (var classi in item.Empresa.Classificacoes)
+                                        {
+                                            sum += classi.ClassificacaoReserva;
+                                        }
+                                        if (item.Empresa.Classificacoes.Count > 0)
+                                        {
+                                            sum /= item.Empresa.Classificacoes.Count;
+                                        }
+                                        <span>(@sum/10</span>
+                                    }
+                                    <svg bootstrap-icon="Star" class="text-warning align-bottom" width="24" height="24"
+                                      aria-label="Classificação"></svg>)
 
                                 </h5>
                             </ul>
@@ -201,7 +212,8 @@
                             <h5>
                                 Empresa:
                                 @Html.DisplayFor(modelItem => item.Empresa.Nome)
-                                (@Html.DisplayFor(modelItem => item.Empresa.Classificacao)/10
+                                @{//(@Html.DisplayFor(modelItem => item.Empresa.Classificacao)/10
+                                }
                                 <svg bootstrap-icon="Star" class="text-warning align-bottom" width="24" height="24"
                                     aria-label="Classificação"></svg>)
 

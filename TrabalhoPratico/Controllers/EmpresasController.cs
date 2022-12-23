@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Build.Framework;
 using Microsoft.EntityFrameworkCore;
 using TrabalhoPratico.Data;
 using TrabalhoPratico.Models;
@@ -36,14 +37,10 @@ namespace TrabalhoPratico.Controllers
                 TempData.Remove("error");
             }
 
-            IQueryable<Empresa> task;
-            if (string.IsNullOrWhiteSpace(pesquisaEmpresa.TextoAPesquisar))
+            IQueryable<Empresa> task = _context.Empresa.Include(e => e.Classificacoes);
+            if (!string.IsNullOrWhiteSpace(pesquisaEmpresa.TextoAPesquisar))
             {
-                task = _context.Empresa.Where(e => e.Nome.Contains(""));
-            }
-            else
-            {
-                task = _context.Empresa.Where(e => e.Nome.Contains(pesquisaEmpresa.TextoAPesquisar));
+                task = task.Where(e => e.Nome.Contains(pesquisaEmpresa.TextoAPesquisar));
             }
 
             if (pesquisaEmpresa.SubscricaoAtiva != null)
@@ -70,11 +67,11 @@ namespace TrabalhoPratico.Controllers
                 }
                 else if (pesquisaEmpresa.Ordem.Equals("classDesc"))
                 {
-                    task = task.OrderByDescending(e => e.Classificacao);
+                    //task = task.OrderByDescending(e => e.Classificacao);
                 }
                 else if (pesquisaEmpresa.Ordem.Equals("classAsc"))
                 {
-                    task = task.OrderBy(e => e.Classificacao);
+                    //task = task.OrderBy(e => e.Classificacao);
                 }
             } else
             {
@@ -237,6 +234,7 @@ namespace TrabalhoPratico.Controllers
             }
 
             var empresa = await _context.Empresa
+                .Include(e => e.Classificacoes)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (empresa == null)
             {

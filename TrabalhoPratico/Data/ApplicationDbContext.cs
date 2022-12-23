@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata;
 using TrabalhoPratico.Models;
 
 namespace TrabalhoPratico.Data
@@ -18,5 +19,7 @@ namespace TrabalhoPratico.Data
             : base(options)
         {
         }
+
+        public DbSet<TrabalhoPratico.Models.Classificacao> Classificacao { get; set; }
     }
 }

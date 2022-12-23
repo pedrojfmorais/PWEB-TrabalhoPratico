@@ -81,7 +81,18 @@
                     <h5>
                         Empresa:
                         @Html.DisplayFor(modelItem => Model.Veiculo.Empresa.Nome)
-                        (@Html.DisplayFor(modelItem => Model.Veiculo.Empresa.Classificacao)/10
+                        @{
+                            int sum = 0;
+                            foreach (var classi in Model.Veiculo.Empresa.Classificacoes)
+                            {
+                                sum += classi.ClassificacaoReserva;
+                            }
+                            if (Model.Veiculo.Empresa.Classificacoes.Count > 0)
+                            {
+                                sum /= Model.Veiculo.Empresa.Classificacoes.Count;
+                            }
+                                <span>(@sum/10</span>
+                        }
                         <svg bootstrap-icon="Star" class="text-warning align-bottom" width="24" height="24"
                              aria-label="Classificação"></svg>)
 

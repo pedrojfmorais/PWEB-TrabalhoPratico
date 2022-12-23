@@ -62,7 +62,7 @@
                         @Html.DisplayNameFor(model => model.ListaDeEmpresas.FirstOrDefault().EstadoSubscricao)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.ListaDeEmpresas.FirstOrDefault().Classificacao)
+                        Classificação
                     </th>
                     <th>Operações</th>
                 </tr>
@@ -93,8 +93,19 @@
                                 }
                             </td>
                         <td>
-                                @Html.DisplayFor(modelItem => item.Classificacao)/10
-                                <svg bootstrap-icon="Star" class="text-warning align-bottom" width="24" height="24" aria-label="Classificação"></svg>
+                            @{
+                                int sum = 0;
+                                foreach (var classi in item.Classificacoes)
+                                {
+                                    sum += classi.ClassificacaoReserva;
+                                }
+                                if (item.Classificacoes.Count > 0)
+                                {
+                                    sum /= item.Classificacoes.Count;
+                                }
+                                <span>@sum/10</span>
+                            }
+                            <svg bootstrap-icon="Star" class="text-warning align-bottom" width="24" height="24" aria-label="Classificação"></svg>
                         </td>
                         <td>
                             @if (item.EstadoSubscricao)

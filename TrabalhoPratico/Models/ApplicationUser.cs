@@ -34,6 +34,7 @@ namespace TrabalhoPratico.Models
         public Empresa? Empresa { get; set; }
 
         public ICollection<Reserva> Reservas { get; set; }
+        public ICollection<Classificacao> Classificacoes { get; set; }
         public ICollection<ReservaEstadoVeiculoLevantamento> VeiculosEntreguesAClientes { get; set; }
     }
 }

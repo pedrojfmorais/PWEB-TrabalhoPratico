@@ -336,7 +336,12 @@ namespace TrabalhoPratico.Controllers
 
             Reserva reserva = new Reserva();
             reserva.VeiculoId = VeiculoId;
-            reserva.Veiculo = _context.Veiculo.Include(v => v.Localizacao).Include(v => v.Categoria).Include(v => v.Empresa).Where(v => v.Id == VeiculoId).First();
+            reserva.Veiculo = _context.Veiculo
+                .Include(v => v.Localizacao)
+                .Include(v => v.Categoria)
+                .Include(v => v.Empresa)
+                .Include(v => v.Empresa.Classificacoes)
+                .Where(v => v.Id == VeiculoId).First();
             reserva.DataLevantamento = DateTime.Now;
             reserva.DataEntrega = DateTime.Now.AddDays(1);
 
@@ -484,6 +489,7 @@ namespace TrabalhoPratico.Controllers
                 .Include(r => r.Veiculo.Categoria)
                 .Include(r => r.Veiculo.Localizacao)
                 .Include(r => r.Veiculo.Empresa)
+                .Include(v => v.Veiculo.Empresa.Classificacoes)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (reserva == null)
             {

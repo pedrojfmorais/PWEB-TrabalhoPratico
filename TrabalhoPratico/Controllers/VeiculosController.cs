@@ -108,6 +108,7 @@ namespace TrabalhoPratico.Controllers
                 .Include(v => v.Categoria)
                 .Include(v => v.Empresa)
                 .Include(v => v.Localizacao)
+                .Include(v => v.Empresa.Classificacoes)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (veiculo == null)
             {
@@ -438,8 +439,12 @@ namespace TrabalhoPratico.Controllers
                 pesquisaVeiculos.DataEntrega = DateTime.Now;
             }
 
-            IQueryable<Veiculo> task = _context.Veiculo.Include(v => v.Categoria)
-                .Include(v => v.Empresa).Include(v => v.Localizacao).Where(v => v.Disponivel && v.Empresa.EstadoSubscricao);
+            IQueryable<Veiculo> task = _context.Veiculo
+                .Include(v => v.Categoria)
+                .Include(v => v.Empresa)
+                .Include(v => v.Empresa.Classificacoes)
+                .Include(v => v.Localizacao)
+                .Where(v => v.Disponivel && v.Empresa.EstadoSubscricao);
             if (string.IsNullOrEmpty(pesquisaVeiculos.TextoAPesquisar))
             {
                 task = task.OrderBy(v => v.PrecoDia);
@@ -491,7 +496,7 @@ namespace TrabalhoPratico.Controllers
                 }
                 else if (pesquisaVeiculos.Ordem.Equals("classDesc"))
                 {
-                    task = task.OrderByDescending(v => v.Empresa.Classificacao);
+                    //task = task.OrderByDescending(v => v.Empresa.Classificacao);
                 }
             }
 

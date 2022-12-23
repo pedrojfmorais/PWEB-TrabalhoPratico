@@ -15,11 +15,7 @@ namespace TrabalhoPratico.Models
             Description = "Estado da subscrição da nova empresa a inserir")]
         public bool EstadoSubscricao { get; set; }
 
-        [Display(Name = "Classificação", Prompt = "Introduza a classificação",
-            Description = "Classificação da nova empresa a inserir")]
-        [RegularExpression("^(10|[0-9])$", ErrorMessage = "O valor inserido tem de ser entre 0 e 10!")]
-        public int Classificacao { get; set; }
-
+        public ICollection<Classificacao> Classificacoes { get; set; }
         public ICollection<Veiculo> Veiculos { get; set; }
         public ICollection<ApplicationUser> Trabalhadores { get; set; }
 
