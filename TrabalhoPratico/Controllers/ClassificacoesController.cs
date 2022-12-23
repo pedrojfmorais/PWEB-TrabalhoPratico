@@ -22,9 +22,23 @@ namespace TrabalhoPratico.Controllers
         // GET: Classificacoes/Create
         public IActionResult Create(int? idReserva)
         {
-            ViewData["EmpresaId"] = new SelectList(_context.Empresa, "Id", "Id");
-            ViewData["ReservaId"] = new SelectList(_context.Reserva, "Id", "Id");
-            return View();
+
+            Classificacao classi = new Classificacao()
+            {
+                ReservaId = idReserva,
+                Reserva = _context.Reserva
+                    .Include(r => r.Veiculo)            
+                    .Include(r => r.Veiculo.Empresa)            
+                    .Include(r => r.Cliente)            
+                    .Include(r => r.ReservaEstadoVeiculoLevantamento)            
+                    .Include(r => r.ReservaEstadoVeiculoEntrega)            
+                    .Where(r => r.Id== idReserva).First()
+            };
+
+            classi.Empresa = _context.Veiculo.Include(v => v.Empresa).Where(v => v.EmpresaId == classi.Reserva.Veiculo.EmpresaId).First().Empresa;
+            classi.EmpresaId = classi.Empresa.Id;
+
+            return View(classi);
         }
 
         // POST: Classificacoes/Create
@@ -40,8 +54,7 @@ namespace TrabalhoPratico.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EmpresaId"] = new SelectList(_context.Empresa, "Id", "Id", classificacao.EmpresaId);
-            ViewData["ReservaId"] = new SelectList(_context.Reserva, "Id", "Id", classificacao.ReservaId);
+
             return View(classificacao);
         }
 
