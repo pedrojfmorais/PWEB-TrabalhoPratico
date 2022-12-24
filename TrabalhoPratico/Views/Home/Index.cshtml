@@ -1,8 +1,132 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@model IEnumerable<Veiculo>
 
+@{
+    ViewData["Title"] = "Inicio";
+}
+<div id="carouselDestaques" class="carousel slide m-0" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#carouselDestaques" data-bs-slide-to="0"
+                class="active" aria-label="Slide 1" aria-current="true"></button>
+        <button type="button" data-bs-target="#carouselDestaques" data-bs-slide-to="1" arialabel="Slide 2" class=""></button>
+        <button type="button" data-bs-target="#carouselDestaques" data-bs-slide-to="2" arialabel="Slide 3" class=""></button>
+    </div>
+    <div class="carousel-inner">
+        <div class="carousel-item active banner_01">
+            <div class="container">
+                <div class="carousel-caption">
+                    <h1 class=" text-warning">Aluga já o carro ideal para ti!</h1>
+                    <p class=" text-white">Conduz já um clássico, sedan ou até super desportivos.</p>
+                    <p><a class="btn btn-lg btn-warning " asp-area="Identity" asp-page="/Account/Login">Junta-te a nós</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="carousel-item banner_02">
+            <div class="container">
+                <div class="carousel-caption">
+                    <h1 class=" text-warning">Aluga já o carro ideal para ti!</h1>
+                    <p class=" text-white">Conduz já um clássico, sedan ou até super desportivos.</p>
+                    <p><a class="btn btn-lg btn-warning " asp-area="Identity" asp-page="/Account/Login">Junta-te a nós</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="carousel-item banner_03">
+            <div class="container">
+                <div class="carousel-caption text-white">
+                    <h1>Conduz já o carro dos teus sonhos.</h1>
+                    <p>
+                        Acesso a centenas de veiculos!<br />
+                        Experimenta já o carros dos teus sonhos, desde clássicos a super desportivos.
+                    </p>
+                    <p><a class="btn btn-lg btn-success" asp-area="Identity" asp-page="/Account/Register">Regista-te!</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselDestaques"
+            data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselDestaques"
+            data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <div class="container bg-white">
+        <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
+            <h3 class="display-4 fw-normal">Veiculos & Preços</h3>
+            <p class="fs-5 text-muted">
+                Na nossa plataforma poderá alugar desde um Fiat 500 até um Bugatti Chiron.
+                Com centenas de empresas empresas reconhecidas na industria automóvel e de aluguer de veiculos, temos para si o veiculo a sua medida.
+                Poderá alugar diversos veiculos ao melhor preço do mercado.
+            </p>
+        </div>
+        <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
+            @foreach (var item in Model)
+            {
+                <div class="col">
+                    <div class="card mb-4 rounded-3 shadow-sm">
+                        <div class="card-header py-3">
+                            @if (item.Avatar == null)
+                            {
+                                <img id="MyAvatar" class="img-thumbnail" src="~/img/user.png" style="height:200px;width:auto" />
+                            }
+                            else
+                            {
+                                <img id="MyAvatar" class="img-thumbnail"
+                             src="data:image/*;base64,@(Convert.ToBase64String(item.Avatar))" style="height:200px;width:auto" />
+                            }
+                            <h2 class="my-0 fw-normal">
+                                
+                                    @Html.DisplayFor(modelItem => item.Marca)
+                                    <span> </span>
+                                    @Html.DisplayFor(modelItem => item.Modelo)
+                                
+                            </h2>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled mt-3 mb-4">
+                                <h5>Categoria: @Html.DisplayFor(modelItem => item.Categoria.Nome)</h5>
+                               
+                                <h5>Localização: @Html.DisplayFor(modelItem => item.Localizacao.Nome)</h5>
+                               
+                                <h5>
+                                    Empresa:
+                                    @Html.DisplayFor(modelItem => item.Empresa.Nome)
+                                    @{
+                                        decimal sum = 0;
+                                        foreach (var classi in item.Empresa.Classificacoes)
+                                        {
+                                            sum += classi.ClassificacaoReserva;
+                                        }
+                                        if (item.Empresa.Classificacoes.Count > 0)
+                                        {
+                                            sum /= item.Empresa.Classificacoes.Count;
+                                            <span>@sum/10</span>
+                                        }
+                                    }
+                                    <svg bootstrap-icon="Star" class="text-warning align-bottom" width="24" height="24" aria-label="Classificação"></svg>
+                                </h5>
+                            </ul>
+                            <hr>
+                            <h1 class="card-title pricing-card-title">
+                                @Html.DisplayFor(modelItem => item.PrecoDia)€
+                                <small class="text-muted fw-light"></small>
+                            </h1>
+                            @if (User.IsInRole("Cliente"))
+                            {
+                                <hr>
+                                <a class="w-100 btn btn-lg btn-outline-primary"
+                           asp-controller="Reservas" asp-action="Create" asp-route-VeiculoId="@item.Id">
+                                    Reservar
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
 </div>

@@ -399,10 +399,10 @@ namespace TrabalhoPratico.Controllers
             }
 
             if(_context.Reserva.Include(r => r.Veiculo).Where(r => r.Veiculo.Id == reserva.VeiculoId
-                    && ((DateTime.Compare(r.DataLevantamento, reserva.DataLevantamento) >= 0
-                    && DateTime.Compare(r.DataLevantamento, reserva.DataEntrega) <= 0)
-                    || (DateTime.Compare(r.DataEntrega, reserva.DataLevantamento) >= 0
-                    && DateTime.Compare(r.DataEntrega, reserva.DataEntrega) <= 0))
+                    && ((DateTime.Compare(reserva.DataLevantamento, r.DataLevantamento) >= 0
+                    && DateTime.Compare(reserva.DataLevantamento, r.DataEntrega) <= 0)
+                    || (DateTime.Compare(reserva.DataEntrega, r.DataLevantamento) >= 0
+                    && DateTime.Compare(reserva.DataEntrega, r.DataEntrega) <= 0))
                     ).Any()) 
             {
                 ViewBag.error = "Este veiculo já tem uma reserva entre essas datas";

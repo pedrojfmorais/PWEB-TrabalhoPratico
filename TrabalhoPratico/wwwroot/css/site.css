@@ -16,3 +16,24 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.banner_01 {
+    background-image: url('/img/banner_01.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+}
+
+.banner_02 {
+    background-image: url('/img/banner_02.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+}
+
+.banner_03 {
+    background-image: url('/img/banner_03.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+}
