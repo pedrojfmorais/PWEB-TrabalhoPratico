@@ -43,8 +43,19 @@
                     else
                     {
                         <span class="text-success">Concluida</span>
+                        @if (Model.Veiculo.Empresa.Classificacoes.Where(c => c.ReservaId == Model.Id).FirstOrDefault() != null)
+                        {
+                            <span>@Model.Veiculo.Empresa.Classificacoes.Where(c => c.ReservaId == Model.Id).FirstOrDefault().ClassificacaoReserva/10</span>
+                            <svg bootstrap-icon="Star" class="text-warning align-bottom" width="24" height="24" aria-label="Classificação"></svg>
+                        }
                     }
                 }
+            </dd>
+            <dt class = "col-sm-6">
+                Preço
+            </dt>
+            <dd class="col-sm-6">
+                <span>@((@Model.DataEntrega-@Model.DataLevantamento).Days * @Model.Veiculo.PrecoDia)€</span>
             </dd>
         </dl>
         <div>
@@ -82,7 +93,7 @@
                         Empresa:
                         @Html.DisplayFor(modelItem => Model.Veiculo.Empresa.Nome)
                         @{
-                            int sum = 0;
+                            decimal sum = 0;
                             foreach (var classi in Model.Veiculo.Empresa.Classificacoes)
                             {
                                 sum += classi.ClassificacaoReserva;
@@ -91,11 +102,12 @@
                             {
                                 sum /= Model.Veiculo.Empresa.Classificacoes.Count;
                             }
-                                <span>(@sum/10</span>
+                            if(sum > 0)
+                            {
+                                <span>@sum/10</span>
+                            }
                         }
-                        <svg bootstrap-icon="Star" class="text-warning align-bottom" width="24" height="24"
-                             aria-label="Classificação"></svg>)
-
+                        <svg bootstrap-icon="Star" class="text-warning align-bottom" width="24" height="24" aria-label="Classificação"></svg>
                     </h5>
                 </ul>
                 <hr>

@@ -48,11 +48,13 @@ namespace TrabalhoPratico.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,EmpresaId,ReservaId,ClassificacaoReserva")] Classificacao classificacao)
         {
+            ModelState.Remove("Reserva");
+            ModelState.Remove("Empresa");
             if (ModelState.IsValid)
             {
                 _context.Add(classificacao);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Historico", "Reservas", null);
             }
 
             return View(classificacao);

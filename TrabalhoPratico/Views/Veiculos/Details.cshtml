@@ -52,7 +52,7 @@
                         Empresa:
                         @Html.DisplayFor(modelItem => Model.Empresa.Nome)
                         @{
-                            int sum = 0;
+                            decimal sum = 0;
                             foreach (var classi in Model.Empresa.Classificacoes)
                             {
                                 sum += classi.ClassificacaoReserva;
@@ -60,11 +60,10 @@
                             if (Model.Empresa.Classificacoes.Count > 0)
                             {
                                 sum /= Model.Empresa.Classificacoes.Count;
+                                <span>@sum/10</span>
                             }
-                                    <span>(@sum/10</span>
                         }
-                        <svg bootstrap-icon="Star" class="text-warning align-bottom" width="24" height="24"
-                             aria-label="Classificação"></svg>)
+                        <svg bootstrap-icon="Star" class="text-warning align-bottom" width="24" height="24" aria-label="Classificação"></svg>
 
                     </h5>
                 </ul>

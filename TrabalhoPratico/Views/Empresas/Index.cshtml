@@ -94,7 +94,7 @@
                             </td>
                         <td>
                             @{
-                                int sum = 0;
+                                decimal sum = 0;
                                 foreach (var classi in item.Classificacoes)
                                 {
                                     sum += classi.ClassificacaoReserva;
@@ -104,8 +104,8 @@
                                     sum /= item.Classificacoes.Count;
                                 }
                                 <span>@sum/10</span>
+                                <svg bootstrap-icon="Star" class="text-warning align-bottom" width="24" height="24" aria-label="Classificação"></svg>
                             }
-                            <svg bootstrap-icon="Star" class="text-warning align-bottom" width="24" height="24" aria-label="Classificação"></svg>
                         </td>
                         <td>
                             @if (item.EstadoSubscricao)

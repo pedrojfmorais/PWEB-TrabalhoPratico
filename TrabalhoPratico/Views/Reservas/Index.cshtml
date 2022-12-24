@@ -162,6 +162,11 @@
                             {
                                 <td>
                                     <span class="text-success">Concluida</span>
+                                    @if (@item.Veiculo.Empresa.Classificacoes.Where(c => c.ReservaId == item.Id).FirstOrDefault() != null)
+                                    {
+                                        <span>@item.Veiculo.Empresa.Classificacoes.Where(c => c.ReservaId == item.Id).FirstOrDefault().ClassificacaoReserva/10</span>
+                                         <svg bootstrap-icon="Star" class="text-warning align-bottom" width="24" height="24" aria-label="Classificação"></svg>
+                                    }
                                 </td>
                                 <td></td>
                             }

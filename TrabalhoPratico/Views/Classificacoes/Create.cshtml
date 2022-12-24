@@ -1,32 +1,29 @@
 ﻿@model TrabalhoPratico.Models.Classificacao
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Classificar reserva";
 }
 
-<h1>Create</h1>
+<h1>Dar uma classificação a sua reserva</h1>
 
-<h4>Classificacao</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
+            <input type="hidden" name="ReservaId" value="@Model.ReservaId" />
+            <input type="hidden" name="EmpresaId" value="@Model.EmpresaId" />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
             <div class="form-group">
                 <label asp-for="ClassificacaoReserva" class="control-label"></label>
                 <input asp-for="ClassificacaoReserva" class="form-control" />
                 <span asp-validation-for="ClassificacaoReserva" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Adicionar Classificação" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Voltar</a>
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

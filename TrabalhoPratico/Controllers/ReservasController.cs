@@ -46,6 +46,7 @@ namespace TrabalhoPratico.Controllers
                 .Include(r => r.ReservaEstadoVeiculoLevantamento)
                 .Include(r => r.ReservaEstadoVeiculoEntrega)
                 .Include(r => r.Veiculo.Empresa)
+                .Include(r => r.Veiculo.Empresa.Classificacoes)
                 .Where(r => r.Veiculo.EmpresaId == user.EmpresaId);
 
             if (pesquisaReservas.DataLevantamento == DateTime.Parse("01/01/0001 00:00:00"))
@@ -167,7 +168,15 @@ namespace TrabalhoPratico.Controllers
             )
         {
             reservaEstadoVeiculoLevantamento.FuncionarioId = (await _userManager.GetUserAsync(User)).Id;
-            reservaEstadoVeiculoLevantamento.Reserva = await _context.Reserva.Where(r => r.Id == reservaEstadoVeiculoLevantamento.ReservaId).Include(r => r.Veiculo).Include(r => r.Cliente).FirstAsync();
+            reservaEstadoVeiculoLevantamento.Reserva = await _context.Reserva
+                .Where(r => r.Id == reservaEstadoVeiculoLevantamento.ReservaId)
+                .Include(r => r.Veiculo)
+                .Include(r => r.Cliente)
+                .Include(r => r.ReservaEstadoVeiculoLevantamento)
+                .Include(r => r.ReservaEstadoVeiculoEntrega)
+                .Include(r => r.Veiculo.Empresa)
+                .Include(r => r.Veiculo.Empresa.Classificacoes)
+                .FirstAsync();
             
             ModelState.Remove("Funcionario");
             ModelState.Remove("Reserva");
@@ -391,14 +400,14 @@ namespace TrabalhoPratico.Controllers
             {
                 _context.Add(reserva);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(HistoricoAsync));
+                return RedirectToAction(nameof(Historico));
             }
 
             return View(reserva);
         }
 
         [Authorize(Roles = "Cliente")]
-        public async Task<IActionResult> HistoricoAsync([Bind("TextoAPesquisar,Ordem,CategoriaId,DataLevantamento,DataEntrega")] PesquisaHistoricoReservasViewModel pesquisaReservas,
+        public async Task<IActionResult> Historico([Bind("TextoAPesquisar,Ordem,CategoriaId,DataLevantamento,DataEntrega")] PesquisaHistoricoReservasViewModel pesquisaReservas,
             string Categoria)
         {
             var user = await _userManager.GetUserAsync(User);
@@ -410,6 +419,7 @@ namespace TrabalhoPratico.Controllers
                 .Include(r => r.ReservaEstadoVeiculoLevantamento)
                 .Include(r => r.ReservaEstadoVeiculoEntrega)
                 .Include(r => r.Veiculo.Empresa)
+                .Include(r => r.Veiculo.Empresa.Classificacoes)
                 .Where(r => r.ClienteId == user.Id);
 
 
@@ -489,6 +499,8 @@ namespace TrabalhoPratico.Controllers
                 .Include(r => r.Veiculo.Categoria)
                 .Include(r => r.Veiculo.Localizacao)
                 .Include(r => r.Veiculo.Empresa)
+                .Include(r => r.ReservaEstadoVeiculoLevantamento)
+                .Include(r => r.ReservaEstadoVeiculoEntrega)
                 .Include(v => v.Veiculo.Empresa.Classificacoes)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (reserva == null)

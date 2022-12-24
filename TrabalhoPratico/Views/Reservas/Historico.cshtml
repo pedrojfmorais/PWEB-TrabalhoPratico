@@ -126,10 +126,20 @@
                             }
                             else
                             {
-                                <td>
-                                    <a asp-controller="Classificacoes" asp-action="Create" asp-route-idReserva="@item.Id" class="btn btn-warning">Dar classificação</a>
-                                    <span class="text-success">Concluida</span>
-                                </td>
+                                @if (@item.Veiculo.Empresa.Classificacoes.Where(c => c.ReservaId == item.Id).FirstOrDefault() != null)
+                                {
+                                    <td>
+                                        <span class="text-success">Concluida</span>
+                                        <span>@item.Veiculo.Empresa.Classificacoes.Where(c => c.ReservaId == item.Id).FirstOrDefault().ClassificacaoReserva/10</span>
+                                        <svg bootstrap-icon="Star" class="text-warning align-bottom" width="24" height="24" aria-label="Classificação"></svg>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        <a asp-controller="Classificacoes" asp-action="Create" asp-route-idReserva="@item.Id" class="btn btn-warning">Dar classificação</a>
+                                    </td>
+                                }
                             }
                         }
                         <td>
