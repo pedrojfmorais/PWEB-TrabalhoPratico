@@ -345,17 +345,29 @@ namespace TrabalhoPratico.Controllers
 
             Reserva reserva = new Reserva();
             reserva.VeiculoId = VeiculoId;
+            reserva.Veiculo = _context.Veiculo.Include(v => v.Localizacao)
+                .Include(v => v.Categoria)
+                .Include(v => v.Empresa)
+                .Include(v => v.Empresa.Classificacoes)
+                .Where(v => v.Id == VeiculoId).First();
+            reserva.DataLevantamento = DateTime.Now.AddDays(1);
+            reserva.DataEntrega = DateTime.Now.AddDays(2);
+
+            return View(reserva);
+
+        }        
+        
+        [Authorize(Roles = "Cliente")]
+        public IActionResult CreateConfirmation([Bind("Id,DataLevantamento,DataEntrega,VeiculoId")] Reserva reserva)
+        {
             reserva.Veiculo = _context.Veiculo
                 .Include(v => v.Localizacao)
                 .Include(v => v.Categoria)
                 .Include(v => v.Empresa)
                 .Include(v => v.Empresa.Classificacoes)
-                .Where(v => v.Id == VeiculoId).First();
-            reserva.DataLevantamento = DateTime.Now;
-            reserva.DataEntrega = DateTime.Now.AddDays(1);
+                .Where(v => v.Id == reserva.VeiculoId).First();
 
             return View(reserva);
-
         }
 
         // POST: Reservas/Create
@@ -366,7 +378,11 @@ namespace TrabalhoPratico.Controllers
         [Authorize(Roles = "Cliente")]
         public async Task<IActionResult> Create([Bind("Id,DataLevantamento,DataEntrega,VeiculoId")] Reserva reserva)
         {
-            reserva.Veiculo = _context.Veiculo.Include(v => v.Localizacao).Include(v => v.Categoria).Include(v => v.Empresa).Where(v => v.Id == reserva.VeiculoId).First();
+            reserva.Veiculo = _context.Veiculo.Include(v => v.Localizacao)
+                .Include(v => v.Categoria)
+                .Include(v => v.Empresa)
+                .Include(v => v.Empresa.Classificacoes)
+                .Where(v => v.Id == reserva.VeiculoId).First();
             reserva.Confirmada = false;
             reserva.ClienteId = (await _userManager.GetUserAsync(User)).Id;
 
