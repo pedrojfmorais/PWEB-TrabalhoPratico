@@ -170,7 +170,35 @@ namespace TrabalhoPratico.Controllers
             {
                 return NotFound();
             }
-            return View(utilizador);
+
+            EditarUtilizadorViewModel editarUtilizador = new EditarUtilizadorViewModel()
+            {
+                utilizador= utilizador,
+                roles = new List<RolesViewModel>()
+            };
+
+            var userRoles = await _userManager.GetRolesAsync(await _userManager.Users.Where(u => u.Id == utilizador.Id).FirstAsync());
+
+            var listRoles = await _context.Roles.ToListAsync();
+
+            foreach (var role in listRoles)
+            {
+                RolesViewModel roleViewModel = new RolesViewModel();
+                roleViewModel.RoleId = role.Id;
+                roleViewModel.RoleName = role.Name;
+                roleViewModel.Selected = userRoles.Contains(role.Name);
+
+                editarUtilizador.roles.Add(roleViewModel);
+            }
+
+            SelectList sl = new SelectList(_context.Empresa, "Id", "Nome");
+            if(utilizador.Empresa != null)
+            {
+                var selected = sl.Where(x => x.Value == utilizador.Empresa.Id.ToString()).First();
+                selected.Selected = true;
+            }
+            ViewBag.EmpresaId = sl;
+            return View(editarUtilizador);
         }
 
         // POST: Utilizadores/Edit/5
@@ -179,42 +207,103 @@ namespace TrabalhoPratico.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador")]
-        public async Task<IActionResult> Edit(string id, [Bind("Id,PrimeiroNome,UltimoNome,NIF,DataNascimento")] ApplicationUser user)
+        public async Task<IActionResult> Edit(string id, List<RolesViewModel> roles, ApplicationUser utilizador)
         {
 
-            var utilizador = await _userManager.Users.Where(u => u.Id == user.Id).FirstAsync();
-
-            if (id != user.Id || utilizador == null)
+            var user = await _userManager.Users.Where(u => u.Id == utilizador.Id).FirstAsync();
+            
+            if (id != utilizador.Id || user == null)
             {
                 return NotFound();
             }
 
+            var utilizadorB4Changes = await _context.Users.FindAsync(id);
+            EditarUtilizadorViewModel editarUtilizador = new EditarUtilizadorViewModel()
+            {
+                utilizador = utilizadorB4Changes,
+                roles = new List<RolesViewModel>()
+            };
+
+            var listRoles = await _context.Roles.ToListAsync();
+            var userRoles = await _userManager.GetRolesAsync(await _userManager.Users.Where(u => u.Id == utilizador.Id).FirstAsync());
+
+            foreach (var role in listRoles)
+            {
+                RolesViewModel roleViewModel = new RolesViewModel();
+                roleViewModel.RoleId = role.Id;
+                roleViewModel.RoleName = role.Name;
+                roleViewModel.Selected = userRoles.Contains(role.Name);
+
+                editarUtilizador.roles.Add(roleViewModel);
+            }
+
+            ModelState.Remove("utilizador.Reservas");
+            ModelState.Remove("utilizador.Classificacoes");
+            ModelState.Remove("utilizador.VeiculosEntreguesAClientes");
             if (ModelState.IsValid)
             {
-                if(utilizador.PrimeiroNome != user.PrimeiroNome)
+                if(user.PrimeiroNome != utilizador.PrimeiroNome)
                 {
-                    utilizador.PrimeiroNome = user.PrimeiroNome;
-                    await _userManager.UpdateAsync(utilizador);
+                    user.PrimeiroNome = utilizador.PrimeiroNome;
+                    await _userManager.UpdateAsync(user);
                 }
-                if(utilizador.UltimoNome != user.UltimoNome)
+                if(user.UltimoNome != utilizador.UltimoNome)
                 {
-                    utilizador.UltimoNome = user.UltimoNome;
-                    await _userManager.UpdateAsync(utilizador);
+                    user.UltimoNome = utilizador.UltimoNome;
+                    await _userManager.UpdateAsync(user);
                 }
-                if(utilizador.NIF != user.NIF)
+                if(user.NIF != utilizador.NIF)
                 {
-                    utilizador.NIF = user.NIF;
-                    await _userManager.UpdateAsync(utilizador);
+                    user.NIF = utilizador.NIF;
+                    await _userManager.UpdateAsync(user);
                 }
-                if(utilizador.DataNascimento != user.DataNascimento)
+                if(user.DataNascimento != utilizador.DataNascimento)
                 {
-                    utilizador.DataNascimento = user.DataNascimento;
-                    await _userManager.UpdateAsync(utilizador);
+                    user.DataNascimento = utilizador.DataNascimento;
+                    await _userManager.UpdateAsync(user);
+                }
+                bool gestorOuFuncionario = false;
+                foreach(var role in roles)
+                {
+                    if((role.RoleName.Equals("Gestor") || role.RoleName.Equals("Funcionario")) && role.Selected)
+                    {
+                        gestorOuFuncionario = true;
+                        if (user.EmpresaId != utilizador.EmpresaId)
+                        {
+                            user.EmpresaId = utilizador.EmpresaId;
+                            await _userManager.UpdateAsync(user);
+                            break;
+                        }
+                    }
+                }
+                if (!gestorOuFuncionario)
+                {
+                    user.EmpresaId = null;
+                    await _userManager.UpdateAsync(user);
                 }
 
+                editarUtilizador.utilizador = user;
+
+                var rolesUser = await _userManager.GetRolesAsync(user);
+                var result = await _userManager.RemoveFromRolesAsync(user, rolesUser);
+
+                if (!result.Succeeded)
+                {
+                    ModelState.AddModelError("", "Cannot remove user existing roles");
+                    return View(editarUtilizador);
+                }
+
+                result = await _userManager.AddToRolesAsync(user,
+                    roles.Where(x => x.Selected).Select(y => y.RoleName));
+
+                if (!result.Succeeded)
+                {
+                    ModelState.AddModelError("", "Cannot add selected roles to user");
+                    return View(editarUtilizador);
+                }
                 return RedirectToAction(nameof(Index));
             }
-            return View(user);
+            return View(editarUtilizador);
         }
     
         // GET: Utilizadores
