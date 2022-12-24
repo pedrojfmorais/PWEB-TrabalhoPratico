@@ -67,11 +67,11 @@ namespace TrabalhoPratico.Controllers
                 }
                 else if (pesquisaEmpresa.Ordem.Equals("classDesc"))
                 {
-                    //task = task.OrderByDescending(e => e.Classificacao);
+                    task = task.OrderByDescending(e => e.Classificacoes.Sum(c => c.ClassificacaoReserva)/(e.Classificacoes.Count == 0 ? 1 : e.Classificacoes.Count));
                 }
                 else if (pesquisaEmpresa.Ordem.Equals("classAsc"))
                 {
-                    //task = task.OrderBy(e => e.Classificacao);
+                    task = task.OrderBy(e => e.Classificacoes.Sum(c => c.ClassificacaoReserva)/(e.Classificacoes.Count == 0 ? 1 : e.Classificacoes.Count));
                 }
             } else
             {

@@ -496,7 +496,7 @@ namespace TrabalhoPratico.Controllers
                 }
                 else if (pesquisaVeiculos.Ordem.Equals("classDesc"))
                 {
-                    //task = task.OrderByDescending(v => v.Empresa.Classificacao);
+                    task = task.OrderByDescending(e => e.Empresa.Classificacoes.Sum(c => c.ClassificacaoReserva)/(e.Empresa.Classificacoes.Count == 0 ? 1 : e.Empresa.Classificacoes.Count));
                 }
             }
 
