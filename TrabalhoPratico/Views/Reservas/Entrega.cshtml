@@ -4,9 +4,9 @@
     ViewData["Title"] = "Receber Veiculo";
 }
 
-<h1>Entregar Veiculo</h1>
+<h1>Receber Veiculo</h1>
 
-<h4>Entregar veiculo ao cliente @Model.Reserva.Cliente.UserName</h4>
+<h4>Receber veiculo ao cliente @Model.Reserva.Cliente.UserName</h4>
 @{
     if(ViewBag.error != null)
     {
@@ -43,7 +43,7 @@
                 <span asp-validation-for="Observacoes" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Entregar Veiculo" class="btn btn-primary" />
+                <input type="submit" value="Receber Veiculo" class="btn btn-primary" />
                 <a asp-action="Index" class="btn btn-secondary">Voltar</a>
             </div>
         </form>
