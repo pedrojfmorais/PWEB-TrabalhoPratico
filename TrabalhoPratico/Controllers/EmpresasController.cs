@@ -94,8 +94,9 @@ namespace TrabalhoPratico.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nome,EstadoSubscricao,Classificacao")] Empresa empresa)
+        public async Task<IActionResult> Create([Bind("Id,Nome,EstadoSubscricao")] Empresa empresa)
         {
+            ModelState.Remove("Classificacoes");
             ModelState.Remove("Veiculos");
             ModelState.Remove("Trabalhadores");
             if (ModelState.IsValid)
@@ -200,6 +201,7 @@ namespace TrabalhoPratico.Controllers
                 return NotFound();
             }
 
+            ModelState.Remove("Classificacoes");
             ModelState.Remove("Veiculos");
             ModelState.Remove("Trabalhadores");
             if (ModelState.IsValid)
