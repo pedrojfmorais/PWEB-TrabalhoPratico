@@ -38,7 +38,15 @@
         @if(Model.ListaDeVeiculos.Count == 0){
             <p class="alert alert-warning">
                 Não foi possível encontrar veiculos com os dados introduzidos. Por favor, reveja a sua
-                pesquisa
+                pesquisa.
+            </p>
+        }
+    } else
+    {
+        @if (Model.ListaDeVeiculos.Count == 0)
+        {
+            <p class="alert alert-warning">
+                Não existem veiculos disponiveis. Por favor, tente novamente mais tarde.
             </p>
         }
     }

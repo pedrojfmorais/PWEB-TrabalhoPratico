@@ -186,6 +186,10 @@ namespace TrabalhoPratico.Controllers
         [Authorize(Roles = "Funcionario,Gestor")]
         public async Task<IActionResult> Create([Bind("Id,Marca,Modelo,Ano,Matricula,Quilometros,Disponivel,PrecoDia,CategoriaId,LocalizacaoId,Avatar,AvatarFile")] VeiculoViewModel veiculo)
         {
+
+            ViewBag.CategoriaId = new SelectList(_context.CategoriaVeiculo, "Id", "Nome", veiculo.CategoriaId);
+            ViewBag.LocalizacaoId = new SelectList(_context.Localizacao, "Id", "Nome", veiculo.LocalizacaoId);
+
             veiculo.EmpresaId = (int)(await _userManager.GetUserAsync(User)).EmpresaId;
 
             ModelState.Remove("Categoria");
@@ -195,15 +199,17 @@ namespace TrabalhoPratico.Controllers
             {
                 if (veiculo.AvatarFile != null)
                 {
-                    if (veiculo.AvatarFile.Length > (200 * 1024))
+                    if (veiculo.AvatarFile.Length > (1024 * 1024))
                     {
                         TempData["error"] = "Error: Ficheiro demasiado grande";
+                        ViewBag.error = "Error: Ficheiro demasiado grande";
                         return View(veiculo);
                     }
                     // método a implementar – verifica se a extensão é .png,.jpg,.jpeg
                     if (!isValidFileType(veiculo.AvatarFile.FileName))
                     {
                         TempData["error"] = "Error: Ficheiro não suportado";
+                        ViewBag.error = "Error: Ficheiro não suportado";
                         return View(veiculo);
                     }
                     using (var dataStream = new MemoryStream())
@@ -232,8 +238,6 @@ namespace TrabalhoPratico.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewBag.CategoriaId = new SelectList(_context.CategoriaVeiculo, "Id", "Nome", veiculo.CategoriaId);
-            ViewBag.LocalizacaoId = new SelectList(_context.Localizacao, "Id", "Nome", veiculo.LocalizacaoId);
             return View(veiculo);
         }
 

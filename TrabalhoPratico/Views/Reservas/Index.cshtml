@@ -143,7 +143,7 @@
                             if(item.ReservaEstadoVeiculoLevantamento == null)
                             {
                             <td>
-                                <span class="text-info">Por Levantar</span>
+                                <span class="text-info">Por Entregar</span>
                             </td>
                             <td>
                                     <a asp-action="Levantamento" asp-route-idReserva="@item.Id" class="btn btn-info">Entregar Veiculo</a>
@@ -152,7 +152,7 @@
                             else if(item.ReservaEstadoVeiculoEntrega == null)
                             {
                             <td>
-                                <span class="text-warning">Por Entregar</span>
+                                <span class="text-warning">Por Receber</span>
                             </td>
                             <td>
                                     <a asp-action="Entrega" asp-route-idReserva="@item.Id" class="btn btn-warning">Receber Veiculo</a>
